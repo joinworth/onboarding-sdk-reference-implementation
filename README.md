@@ -1,1 +1,0 @@
-# onboarding-sdk-reference-implementation
