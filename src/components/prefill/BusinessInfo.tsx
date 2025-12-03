@@ -1,10 +1,12 @@
-import type { ReactElement } from 'react'
-import type { PrefillFormData } from '@/types/prefill'
-import FormField from './FormField'
+import type { ReactElement } from 'react';
+import type { PrefillFormData } from '@/types/prefill';
+import FormField from './FormField';
 
 interface BusinessInfoProps {
-  formData: PrefillFormData
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+  formData: PrefillFormData;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => void;
 }
 
 const BusinessInfo = ({
@@ -62,6 +64,6 @@ const BusinessInfo = ({
       required
     />
   </>
-)
+);
 
-export default BusinessInfo
+export default BusinessInfo;

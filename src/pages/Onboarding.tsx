@@ -1,8 +1,8 @@
-import { AppContext } from '@/context/app'
+import { AppContext } from '@/context/app';
 import {
   createOnboardingApp,
   type StageNavigation,
-} from '@worthai/onboarding-sdk'
+} from '@worthai/onboarding-sdk';
 import {
   useContext,
   useEffect,
@@ -10,14 +10,20 @@ import {
   useRef,
   useState,
   type ReactElement,
-} from 'react'
-import Loading from '@/components/onboarding/Loading'
+} from 'react';
+import Loading from '@/components/onboarding/Loading';
+import {
+  codeSnippet,
+  cssSnippet,
+  customCss,
+} from '@/components/onboarding/constants';
 
 const Onboarding = (): ReactElement => {
-  const ref = useRef<HTMLDivElement>(null)
-  const { token } = useContext(AppContext)
-  const [navigation, setNavigation] = useState<StageNavigation>()
-  const [loading, setLoading] = useState(true)
+  const ref = useRef<HTMLDivElement>(null);
+  const { token } = useContext(AppContext);
+  const [navigation, setNavigation] = useState<StageNavigation>();
+  const [isLoading, setLoading] = useState(true);
+  const [showBorder, setShowBorder] = useState(false);
   const onboardingApp = useMemo(
     () =>
       createOnboardingApp({
@@ -26,80 +32,98 @@ const Onboarding = (): ReactElement => {
         mode: 'embedded',
       }),
     [token],
-  )
+  );
 
-  onboardingApp.setCustomCss(
-    `
-    .rounded-xl {
-      border: 3px solid #FFC100;
-    }  
-  `,
-  )
+  onboardingApp.setCustomCss(customCss);
 
   useEffect(() => {
-    const container = ref.current
-    if (!container) return
+    const container = ref.current;
+    if (!container) return;
 
-    container.appendChild(onboardingApp.iframe)
+    container.appendChild(onboardingApp.iframe);
+    (container.children[0] as HTMLElement).style.minHeight = '700px';
     const subscription = onboardingApp.subscribe((event) => {
       switch (event.data.type) {
         case 'AUTHENTICATING':
-          setLoading(true)
-          break
+          setLoading(true);
+          break;
         case 'ONBOARDING_STARTED':
         case 'AUTHENTICATION_FAILED':
-          setLoading(false)
-          break
+          setLoading(false);
+          break;
         case 'STAGE_NAVIGATION':
-          setNavigation(event.data.payload.stageNavigation)
-          break
+          setNavigation(event.data.payload.stageNavigation);
+          break;
         default:
-          break
+          break;
       }
-    })
+    });
 
     return () => {
       if (container && container.contains(onboardingApp.iframe)) {
-        container.removeChild(onboardingApp.iframe)
+        container.removeChild(onboardingApp.iframe);
       }
-      subscription.unsubscribe()
-    }
-  }, [onboardingApp])
-
-  if (loading) {
-    return <Loading />
-  }
+      subscription.unsubscribe();
+    };
+  }, [onboardingApp]);
 
   return (
-    <>
-      <div ref={ref} className="min-h-screen bg-blue-950"></div>
-      <div className="flex gap-4 justify-center p-4 bg-blue-950">
+    <div className="w-4xl flex flex-col items-center self-center gap-8">
+      {isLoading ? <Loading /> : null}
+      <div
+        ref={ref}
+        className={`w-full ${isLoading ? 'hidden' : ''} ${
+          showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
+        }`}
+      />
+      <div className="flex w-full justify-between">
         <button
-          disabled={navigation?.prevStatus.disabled}
-          onClick={() => onboardingApp.prev()}
-          className="button-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => setShowBorder(!showBorder)}
+          className={`button-secondary-dark ${showBorder ? 'bg-blue-600' : ''}`}
+          type="button"
         >
-          Back
+          {showBorder ? 'Hide iframe' : 'Show iframe'}
         </button>
-        <button
-          disabled={navigation?.skipStatus.disabled}
-          onClick={() => onboardingApp.skip()}
-          className="button-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Skip
-        </button>
-        {navigation?.nextStatus.visible && (
+        <div className="flex gap-4">
           <button
-            disabled={navigation?.nextStatus.disabled}
-            onClick={() => onboardingApp.next()}
-            className="button-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={navigation?.prevStatus.disabled}
+            onClick={() => onboardingApp.prev()}
+            className="button-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {navigation?.nextStatus.isSubmit ? 'Submit' : 'Next'}
+            Back
           </button>
-        )}
+          <button
+            disabled={navigation?.skipStatus.disabled}
+            onClick={() => onboardingApp.skip()}
+            className="button-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Skip
+          </button>
+          {navigation?.nextStatus.visible && (
+            <button
+              disabled={navigation?.nextStatus.disabled}
+              onClick={() => onboardingApp.next()}
+              className="button-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {navigation?.nextStatus.isSubmit ? 'Submit' : 'Next'}
+            </button>
+          )}
+        </div>
       </div>
-    </>
-  )
-}
+      <div className="w-full mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
+        <p className="text-sm text-gray-400 mb-2">SDK React Initialization:</p>
+        <pre className="text-xs text-gray-300 overflow-x-auto">
+          <code>{codeSnippet}</code>
+        </pre>
+      </div>
+      <div className="w-full mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
+        <p className="text-sm text-gray-400 mb-2">Theme CSS:</p>
+        <pre className="text-xs text-gray-300 overflow-x-auto">
+          <code>{cssSnippet}</code>
+        </pre>
+      </div>
+    </div>
+  );
+};
 
-export default Onboarding
+export default Onboarding;

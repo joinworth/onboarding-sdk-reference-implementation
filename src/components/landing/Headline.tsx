@@ -1,9 +1,9 @@
-import type { ReactElement } from 'react'
-import { Link } from 'react-router'
+import type { ReactElement } from 'react';
+import { Link } from 'react-router';
 
 const Headline = (): ReactElement => {
   return (
-    <div className="flex justify-center px-6 py-29 bg-blue-950 text-white">
+    <div className="flex justify-center px-6 py-29 text-white">
       <div className="text-center space-y-8">
         <h1 className="text-[80px] font-serif text-white leading-22">
           Underwriting,
@@ -21,13 +21,18 @@ const Headline = (): ReactElement => {
           <Link to="/prefill-form" className="button-primary">
             Launch Demo
           </Link>
-          <Link to="/docs" className="button-secondary-dark">
-            View UI Components
+          <Link
+            to="https://github.com/joinworth/onboarding-sdk-reference-implementation"
+            className="button-secondary-dark"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Github
           </Link>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Headline
+export default Headline;

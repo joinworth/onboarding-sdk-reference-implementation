@@ -1,4 +1,4 @@
-import type { PrefillFormData } from '@/types/prefill'
+import type { PrefillFormData } from '@/types/prefill';
 
 export const initialFormData: PrefillFormData = {
   external_id: 'sdk-demo-1',
@@ -28,10 +28,10 @@ export const initialFormData: PrefillFormData = {
   applicant_subrole_code: 'owner',
   generate_invite_link: true,
   is_simple_flow: true,
-}
+};
 
-export const countryOptions = [{ value: 'US', label: 'United States' }]
+export const countryOptions = [{ value: 'US', label: 'United States' }];
 
-export const ownerTypeOptions = [{ value: 'CONTROL', label: 'Control' }]
+export const ownerTypeOptions = [{ value: 'CONTROL', label: 'Control' }];
 
-export const subroleCodeOptions = [{ value: 'owner', label: 'Owner' }]
+export const subroleCodeOptions = [{ value: 'owner', label: 'Owner' }];
