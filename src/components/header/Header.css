@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+
+@layer components {
+  .header-btn {
+    @apply hover:text-gray-300 transition-colors text-lg font-light;
+  }
+}
