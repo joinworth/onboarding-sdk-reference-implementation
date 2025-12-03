@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react'
+import type { ReactElement } from 'react';
 
 const Loading = (): ReactElement => {
   return (
@@ -18,7 +18,7 @@ const Loading = (): ReactElement => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Loading
+export default Loading;

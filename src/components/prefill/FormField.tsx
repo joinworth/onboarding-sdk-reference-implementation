@@ -1,15 +1,17 @@
-import type { ReactElement } from 'react'
-import type { PrefillFormData } from '@/types/prefill'
+import type { ReactElement } from 'react';
+import type { PrefillFormData } from '@/types/prefill';
 
 interface FormFieldProps {
-  label: string
-  name: keyof PrefillFormData
-  type?: string
-  required?: boolean
-  value: string | number | boolean
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
-  placeholder?: string
-  options?: Array<{ value: string; label: string }>
+  label: string;
+  name: keyof PrefillFormData;
+  type?: string;
+  required?: boolean;
+  value: string | number | boolean;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => void;
+  placeholder?: string;
+  options?: Array<{ value: string; label: string }>;
 }
 
 const FormField = ({
@@ -38,7 +40,7 @@ const FormField = ({
           {required && <span className="text-red-400 ml-1">*</span>}
         </label>
       </div>
-    )
+    );
   }
 
   if (type === 'select' && options) {
@@ -63,7 +65,7 @@ const FormField = ({
           ))}
         </select>
       </div>
-    )
+    );
   }
 
   return (
@@ -83,7 +85,7 @@ const FormField = ({
         className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       />
     </div>
-  )
-}
+  );
+};
 
-export default FormField
+export default FormField;

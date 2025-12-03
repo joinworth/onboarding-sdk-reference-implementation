@@ -12,13 +12,13 @@ export const convertFormValue = (
 ): string | number | boolean => {
   switch (type) {
     case 'checkbox':
-      return checked ?? false
+      return checked ?? false;
 
     case 'number': {
-      const numValue = Number(value)
-      return Number.isNaN(numValue) ? 0 : numValue
+      const numValue = Number(value);
+      return Number.isNaN(numValue) ? 0 : numValue;
     }
     default:
-      return value
+      return value;
   }
-}
+};

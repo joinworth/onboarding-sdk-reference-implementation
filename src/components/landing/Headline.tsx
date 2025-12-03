@@ -1,5 +1,5 @@
-import type { ReactElement } from 'react'
-import { Link } from 'react-router'
+import type { ReactElement } from 'react';
+import { Link } from 'react-router';
 
 const Headline = (): ReactElement => {
   return (
@@ -27,7 +27,7 @@ const Headline = (): ReactElement => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Headline
+export default Headline;

@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react'
+import type { ReactElement } from 'react';
 
 const Features = (): ReactElement => {
   const features = [
@@ -19,7 +19,7 @@ const Features = (): ReactElement => {
         'Built for financial institutions demanding precision and speed',
       bgImage: 'bg-gradient-to-br from-amber-400/20 to-orange-600/20',
     },
-  ]
+  ];
 
   const CubeIcon = () => (
     <svg
@@ -53,7 +53,7 @@ const Features = (): ReactElement => {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 
   return (
     <section className="bg-blue-950 text-white py-20 px-6">
@@ -96,7 +96,7 @@ const Features = (): ReactElement => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Features
+export default Features;

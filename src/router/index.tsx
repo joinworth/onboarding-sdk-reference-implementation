@@ -1,9 +1,9 @@
-import type { RouteObject } from 'react-router'
-import { createBrowserRouter } from 'react-router'
-import App from '../App'
-import PrefillForm from '../pages/PrefillForm'
-import Landing from '../pages/Landing'
-import Onboarding from '../pages/Onboarding'
+import type { RouteObject } from 'react-router';
+import { createBrowserRouter } from 'react-router';
+import App from '../App';
+import PrefillForm from '../pages/PrefillForm';
+import Landing from '../pages/Landing';
+import Onboarding from '../pages/Onboarding';
 
 const routes: RouteObject[] = [
   {
@@ -31,8 +31,8 @@ const routes: RouteObject[] = [
       },
     ],
   },
-]
+];
 
-const router = createBrowserRouter(routes)
+const router = createBrowserRouter(routes);
 
-export default router
+export default router;

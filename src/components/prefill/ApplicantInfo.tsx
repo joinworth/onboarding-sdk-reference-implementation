@@ -1,11 +1,13 @@
-import type { ReactElement } from 'react'
-import type { PrefillFormData } from '@/types/prefill'
-import FormField from './FormField'
-import { subroleCodeOptions } from './constants'
+import type { ReactElement } from 'react';
+import type { PrefillFormData } from '@/types/prefill';
+import FormField from './FormField';
+import { subroleCodeOptions } from './constants';
 
 interface ApplicantInfoProps {
-  formData: PrefillFormData
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+  formData: PrefillFormData;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => void;
 }
 
 const ApplicantInfo = ({
@@ -45,6 +47,6 @@ const ApplicantInfo = ({
       required
     />
   </>
-)
+);
 
-export default ApplicantInfo
+export default ApplicantInfo;

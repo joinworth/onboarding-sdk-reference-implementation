@@ -1,7 +1,7 @@
-import type { ReactElement } from 'react'
-import { Link } from 'react-router'
-import logo from '@/assets/logo.png'
-import './Header.css'
+import type { ReactElement } from 'react';
+import { Link } from 'react-router';
+import logo from '@/assets/logo.png';
+import './Header.css';
 
 const Header = (): ReactElement => {
   return (
@@ -53,7 +53,7 @@ const Header = (): ReactElement => {
         </div>
       </nav>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

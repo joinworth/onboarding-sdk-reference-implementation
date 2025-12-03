@@ -1,11 +1,13 @@
-import type { ReactElement } from 'react'
-import type { PrefillFormData } from '@/types/prefill'
-import FormField from './FormField'
-import { countryOptions, ownerTypeOptions } from './constants'
+import type { ReactElement } from 'react';
+import type { PrefillFormData } from '@/types/prefill';
+import FormField from './FormField';
+import { countryOptions, ownerTypeOptions } from './constants';
 
 interface OwnerInfoProps {
-  formData: PrefillFormData
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+  formData: PrefillFormData;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => void;
 }
 
 const OwnerInfo = ({ formData, onChange }: OwnerInfoProps): ReactElement => (
@@ -117,6 +119,6 @@ const OwnerInfo = ({ formData, onChange }: OwnerInfoProps): ReactElement => (
       required
     />
   </>
-)
+);
 
-export default OwnerInfo
+export default OwnerInfo;
