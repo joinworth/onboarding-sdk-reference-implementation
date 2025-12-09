@@ -5,7 +5,7 @@ import FormSection from '@/components/prefill/FormSection';
 import OwnerInfo from '@/components/prefill/OwnerInfo';
 import { convertFormValue } from '@/components/prefill/utils';
 import { AppContext } from '@/context/app';
-// import { getToken } from '@/services/token'
+// import { getToken } from '@/services/token';
 import type { PrefillFormData } from '@/types/prefill';
 import { useContext, useState, type FormEvent, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
@@ -36,7 +36,7 @@ const PrefillForm = (): ReactElement => {
     setIsSubmitting(true);
 
     try {
-      // const token = await getToken(formData)
+      // const token = await getToken(formData);
       const token =
         'eyJhbGciOiJIUzI1NiJ9.VTJGc2RHVmtYMSs3STB2QW4wYjNHZTErN0lYTHNqeUQ2c3NlcW5jbUZEcU9MaHBvVy9MbHJHRll3a2Z2TzRVTVVMSXRSZUpXY2lwTC9FNTJDS0pDRXVVZWtIK3pSd0pHai84V0dFMEdUcWc0R3NjdUZSY3p6cTJYbEpmaXFpY0ZCbkZrMlVpQ0ZWY1IrS2RUaE43aFAvOXdMUm4wckZ3dklSNFFNUXJiWnNYdWRqQkFvVFNjY0Zzbm1yWER0czJEVHN1SjZ1MHlzL3o4NkZ0RFd3Ym90S29tN3VKT2tQemlQVC9WYnBMZ1htQUFaTTBueVJEMmtBOE1ORFJrR0lXQjVJSldVWmJseU1XSWVZdEZrZ3lGNGRXU3pxblc1YkNmb00zQU1abk8vT2tJbllwZDJrUGsxVUN5Qm5lRG1BTTRkQXhhY0F3djZrK09XU3YxbWJrKyt5VWlrZ1VhZW92Um5mVE1sNWU1em0yNkVvMDY4WTU0aGpsZysvdkxXZ1RrbG9pTzQzdDYzb0docytPeGEyRkh1eG8rNEN5OWdReWdGK3NuUzEwZXFWYmNyWE1yZmxGWjBvZ2cvWUxpYmgvRUpCbHpXblp0Y1pxMVZIUzlETFoxQzJXM2xvaHVmUWsrOW4veTNxZ0Q1Q1FWaUZPYWJTUXVjVGRHT2FvYlhlbVJDaDNMVUltYzFHSWZnaHFEc25tdS9hdTNONk9vamJDamN0QmZaUWNsODZOSjVCQUZFQnYxRy80cWhnL3ovdTFWelN4V2VtaFJVdlp1aUdwVkZFbDlNRDdEMTE2M3VjMTYzV0V1eTRmQ3N1QlJtWmN2N0FFTEZZdks1VzZjNlJZMU93a3BvTERzSHBlNmU2cGJDSmNFY2ZCcWluZU9pTUVKek1kT1dHMWE0WFZYbDBKVXZUTy9LMnpOdGFNR2s2TjE.3XooOZcgw-6u7eYyMJaCKxLfEbWhDldK15XOzfViF78';
       console.log('Token:', token);
@@ -50,7 +50,7 @@ const PrefillForm = (): ReactElement => {
   };
 
   return (
-    <div className="min-h-fit bg-blue-950 py-12 px-6">
+    <div className="min-h-fit py-12 px-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-serif text-white mb-2">

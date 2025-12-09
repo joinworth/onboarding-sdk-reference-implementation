@@ -12,12 +12,18 @@ import {
   type ReactElement,
 } from 'react';
 import Loading from '@/components/onboarding/Loading';
+import {
+  codeSnippet,
+  cssSnippet,
+  customCss,
+} from '@/components/onboarding/constants';
 
 const Onboarding = (): ReactElement => {
   const ref = useRef<HTMLDivElement>(null);
   const { token } = useContext(AppContext);
   const [navigation, setNavigation] = useState<StageNavigation>();
   const [isLoading, setLoading] = useState(true);
+  const [showBorder, setShowBorder] = useState(false);
   const onboardingApp = useMemo(
     () =>
       createOnboardingApp({
@@ -28,104 +34,7 @@ const Onboarding = (): ReactElement => {
     [token],
   );
 
-  onboardingApp.setCustomCss(
-    `
-    body {
-      background-color: #112749;
-    }
-    p, div {
-      color: white !important;
-    }
-    
-    /* Text inputs and textarea */
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"],
-    input[type="number"],
-    input[type="date"],
-    input[type="password"],
-    textarea {
-      border-radius: 0.5rem;
-      background-color: rgba(255, 255, 255, 0.1) !important;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white !important;
-    }
-    input[type="text"]::placeholder,
-    input[type="email"]::placeholder,
-    input[type="tel"]::placeholder,
-    input[type="number"]::placeholder,
-    input[type="date"]::placeholder,
-    input[type="password"]::placeholder,
-    textarea::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="tel"]:focus,
-    input[type="number"]:focus,
-    input[type="date"]:focus,
-    input[type="password"]:focus,
-    textarea:focus {
-      outline: none;
-      box-shadow: 0 0 0 2px #3b82f6;
-      border-color: transparent;
-    }
-    
-    /* Checkbox */
-    input[type="checkbox"] {
-      border-radius: 0.25rem;
-      border: 1px solid #d1d5db;
-      accent-color: #3b82f6;
-    }
-    input[type="checkbox"]:focus {
-      outline: none;
-      box-shadow: 0 0 0 2px #3b82f6;
-    }
-    
-    /* Select and similar controls */
-    select,
-    .css-fz40lm-control,
-    [data-qa="z2qik6z2qi"],
-    [data-qa="idrli5idrl"],
-    [data-qa="95eqes95eq"],
-    [data-qa="urbmxeurbm"] {
-      border-radius: 0.5rem;
-      background-color: rgba(255, 255, 255, 0.1) !important;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white !important;
-    }
-    select:focus,
-    .css-fz40lm-control:focus,
-    .css-fz40lm-control:focus-within,
-    [data-qa="z2qik6z2qi"]:focus,
-    [data-qa="z2qik6z2qi"]:focus-within,
-    [data-qa="idrli5idrl"]:focus,
-    [data-qa="idrli5idrl"]:focus-within,
-    [data-qa="95eqes95eq"]:focus,
-    [data-qa="95eqes95eq"]:focus-within,
-    [data-qa="urbmxeurbm"]:focus,
-    [data-qa="urbmxeurbm"]:focus-within {
-      outline: none;
-      box-shadow: 0 0 0 2px #3b82f6;
-      border-color: transparent;
-    }
-    select option {
-      background-color: #112749;
-      color: white !important;
-    }
-    
-    /* Text elements */
-    [data-qa="p14171p141"],
-    [data-qa="iadi34iadi"] {
-      color: white !important;
-    }
-    label {
-      font-size: 0.875rem !important;
-      font-weight: 500 !important;
-      color: white !important;
-    }
-  `,
-  );
+  onboardingApp.setCustomCss(customCss);
 
   useEffect(() => {
     const container = ref.current;
@@ -159,33 +68,59 @@ const Onboarding = (): ReactElement => {
   }, [onboardingApp]);
 
   return (
-    <div className="flex flex-col flex-1 bg-blue-950 items-center">
+    <div className="w-4xl flex flex-col items-center self-center gap-8">
       {isLoading ? <Loading /> : null}
-      <div ref={ref} className={`w-7xl ${isLoading ? 'hidden' : ''}`} />
-      <div className="flex gap-4 justify-center p-4 bg-blue-950">
+      <div
+        ref={ref}
+        className={`w-full ${isLoading ? 'hidden' : ''} ${
+          showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
+        }`}
+      />
+      <div className="flex w-full justify-between">
         <button
-          disabled={navigation?.prevStatus.disabled}
-          onClick={() => onboardingApp.prev()}
-          className="button-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => setShowBorder(!showBorder)}
+          className={`button-secondary-dark ${showBorder ? 'bg-blue-600' : ''}`}
+          type="button"
         >
-          Back
+          {showBorder ? 'Hide iframe' : 'Show iframe'}
         </button>
-        <button
-          disabled={navigation?.skipStatus.disabled}
-          onClick={() => onboardingApp.skip()}
-          className="button-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Skip
-        </button>
-        {navigation?.nextStatus.visible && (
+        <div className="flex gap-4">
           <button
-            disabled={navigation?.nextStatus.disabled}
-            onClick={() => onboardingApp.next()}
-            className="button-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={navigation?.prevStatus.disabled}
+            onClick={() => onboardingApp.prev()}
+            className="button-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {navigation?.nextStatus.isSubmit ? 'Submit' : 'Next'}
+            Back
           </button>
-        )}
+          <button
+            disabled={navigation?.skipStatus.disabled}
+            onClick={() => onboardingApp.skip()}
+            className="button-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Skip
+          </button>
+          {navigation?.nextStatus.visible && (
+            <button
+              disabled={navigation?.nextStatus.disabled}
+              onClick={() => onboardingApp.next()}
+              className="button-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {navigation?.nextStatus.isSubmit ? 'Submit' : 'Next'}
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="w-full mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
+        <p className="text-sm text-gray-400 mb-2">SDK React Initialization:</p>
+        <pre className="text-xs text-gray-300 overflow-x-auto">
+          <code>{codeSnippet}</code>
+        </pre>
+      </div>
+      <div className="w-full mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
+        <p className="text-sm text-gray-400 mb-2">Theme CSS:</p>
+        <pre className="text-xs text-gray-300 overflow-x-auto">
+          <code>{cssSnippet}</code>
+        </pre>
       </div>
     </div>
   );

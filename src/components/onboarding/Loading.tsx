@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 
 const Loading = (): ReactElement => {
   return (
-    <div className="min-h-screen bg-blue-950 flex items-center justify-center">
+    <div className="min-h-96 flex items-center justify-center">
       <div className="text-center space-y-6">
         <div className="flex justify-center">
           <div className="relative w-16 h-16">

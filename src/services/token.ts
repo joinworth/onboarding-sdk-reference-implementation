@@ -10,8 +10,7 @@ interface OnboardResponse {
  * @throws Error if the request fails
  */
 export async function getToken(formData: PrefillFormData): Promise<string> {
-  const apiUrl =
-    'https://hrm3epewvfcrmak6qxlak3djje0onqtq.lambda-url.us-east-1.on.aws';
+  const apiUrl = 'https://api-dev.joinworth.ai';
 
   try {
     const response = await fetch(apiUrl, {

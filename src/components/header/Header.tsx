@@ -5,19 +5,24 @@ import './Header.css';
 
 const Header = (): ReactElement => {
   return (
-    <header className="bg-blue-950 text-white py-4 px-14 flex justify-center">
+    <header className="text-white py-4 px-14 flex justify-center">
       <nav className="flex-1 max-w-7xl flex items-center justify-between self-center">
         <Link to="/">
           <img src={logo} alt="logo" className="w-10 h-10" />
         </Link>
         <div className="flex items-center gap-8">
-          <Link to="/product" className="header-btn">
+          <Link to="/" className="header-btn">
             Product
           </Link>
           <Link to="/prefill-form" className="header-btn">
             Demo
           </Link>
-          <Link to="/docs" className="header-btn">
+          <Link
+            to="https://github.com/joinworth/onboarding-sdk-reference-implementation"
+            className="header-btn"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Docs
           </Link>
           <div className="relative">
