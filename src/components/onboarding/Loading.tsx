@@ -11,8 +11,10 @@ const Loading = (): ReactElement => {
           </div>
         </div>
         <div className="space-y-2">
-          <h2 className="text-2xl font-serif text-white">Loading Onboarding</h2>
-          <p className="text-white/70">
+          <h2 className="text-2xl font-serif text-blue-950">
+            Loading Onboarding
+          </h2>
+          <p className="text-blue-950/70">
             Please wait while we prepare your onboarding experience...
           </p>
         </div>

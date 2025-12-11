@@ -6,6 +6,8 @@ This repository serves as a reference implementation for integrating the [@worth
 
 This reference implementation showcases how to:
 
+- Build a complete onboarding flow with a landing page and prefill form
+- Generate invitation tokens from form data
 - Initialize and embed the onboarding SDK
 - Handle SDK events (authentication, navigation, etc.)
 - Control onboarding flow programmatically (next, previous, skip)
@@ -22,17 +24,20 @@ This reference implementation showcases how to:
 ## Installation
 
 1. Clone this repository:
+
 ```bash
-git clone https://github.com/your-org/onboarding-sdk-reference-implementation.git
+git clone https://github.com/joinworth/onboarding-sdk-reference-implementation.git
 cd onboarding-sdk-reference-implementation
 ```
 
-2. Install dependencies:
+1. Install dependencies:
+
 ```bash
 npm install
 ```
 
-3. Start the development server:
+1. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -130,6 +135,7 @@ onboardingApp.skip();
 ```
 
 The navigation state is available through the `STAGE_NAVIGATION` event, which provides:
+
 - `prevStatus`: Previous button state (disabled/enabled)
 - `nextStatus`: Next button state (disabled/enabled, visible, isSubmit)
 - `skipStatus`: Skip button state (disabled/enabled)
@@ -153,22 +159,71 @@ See `src/components/onboarding/constants.ts` for a complete example of custom CS
 
 ## Project Structure
 
-```
+```text
 src/
 ├── pages/
-│   ├── Onboarding.tsx      # Main SDK integration example
-│   ├── PrefillForm.tsx     # Example form for token generation
-│   └── Landing.tsx         # Landing page
+│   ├── Landing.tsx         # Landing page with features showcase
+│   ├── PrefillForm.tsx     # Form for collecting onboarding data
+│   └── Onboarding.tsx      # Main SDK integration example
 ├── components/
+│   ├── header/
+│   │   ├── Header.tsx      # Navigation header component
+│   │   └── Header.css      # Header styles
+│   ├── landing/
+│   │   ├── Headline.tsx    # Landing page headline section
+│   │   └── Features.tsx    # Features showcase section
 │   ├── onboarding/
 │   │   ├── constants.ts    # SDK configuration and CSS
 │   │   └── Loading.tsx     # Loading component
-│   └── ...
+│   ├── prefill/
+│   │   ├── BusinessInfo.tsx    # Business information form fields
+│   │   ├── OwnerInfo.tsx       # Owner information form fields
+│   │   ├── ApplicantInfo.tsx   # Applicant information form fields
+│   │   ├── FormSection.tsx     # Reusable form section wrapper
+│   │   ├── FormField.tsx       # Reusable form field component
+│   │   ├── constants.ts        # Form constants and initial data
+│   │   └── utils.ts            # Form utility functions
+│   └── ScrollToTop.tsx     # Scroll to top component
 ├── context/
 │   └── app.tsx             # App context for token management
+├── services/
+│   └── token.ts            # Token generation service
+├── types/
+│   └── prefill.ts          # TypeScript types for prefill form
 └── router/
     └── index.tsx           # React Router configuration
 ```
+
+## Application Flow
+
+The application follows this flow:
+
+1. **Landing Page** (`/`) - Welcome page with features and call-to-action
+2. **Prefill Form** (`/prefill-form`) - Collect business, owner, and applicant information
+3. **Onboarding** (`/onboarding`) - Embedded SDK flow using the generated token
+
+### Landing Page
+
+The landing page (`src/pages/Landing.tsx`) showcases the application with:
+
+- Hero headline section
+- Features showcase
+- Call-to-action buttons to start the demo
+
+### Prefill Form
+
+The prefill form (`src/pages/PrefillForm.tsx`) collects:
+
+- Business information (name, EIN, industry, etc.)
+- Owner information (name, email, phone, SSN, etc.)
+- Applicant information (name, email, phone, address, etc.)
+
+Upon submission, the form:
+
+1. Sends data to the API endpoint
+2. Receives an invitation token
+3. Stores the token in app context
+4. Navigates to the onboarding page
 
 ## Configuration
 
@@ -177,7 +232,8 @@ src/
 You may want to configure the following:
 
 - **Origin URL**: Update the `origin` parameter in `createOnboardingApp` to point to your environment
-- **Invite Token**: Obtain from your backend API (see `src/services/token.ts` for reference)
+- **API URL**: Update the API endpoint in `src/services/token.ts` (currently `https://api-dev.joinworth.ai`)
+- **Invite Token**: Automatically generated from the prefill form, or obtain from your backend API
 
 ### Customization
 
@@ -221,11 +277,20 @@ See `src/pages/Onboarding.tsx` for a complete working example that includes:
 
 ### Token Management
 
-The reference implementation includes a token management example in `src/services/token.ts`. In production, you should:
+The reference implementation includes a token generation service in `src/services/token.ts` that:
 
-1. Generate tokens server-side
+- Accepts prefill form data
+- Sends a POST request to the API endpoint
+- Returns an invitation token
+
+The token is managed through React Context (`src/context/app.tsx`) and passed to the onboarding SDK.
+
+**Note**: In production, you should:
+
+1. Generate tokens server-side for security
 2. Securely pass tokens to your frontend
 3. Store tokens appropriately (context, state, etc.)
+4. Implement proper error handling and token validation
 
 ## Troubleshooting
 
@@ -243,10 +308,6 @@ This is a reference implementation. Feel free to:
 - Report issues
 - Suggest improvements
 - Submit pull requests
-
-## License
-
-[Add your license here]
 
 ## Support
 

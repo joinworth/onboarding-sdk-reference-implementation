@@ -3,6 +3,18 @@ interface OnboardResponse {
   invitation_token: string;
 }
 
+const TOKEN_STORAGE_KEY = 'onboarding_token';
+
+export function saveTokenToStorage(token: string): void {
+  localStorage.setItem(TOKEN_STORAGE_KEY, token);
+}
+export function getTokenFromStorage(): string | null {
+  return localStorage.getItem(TOKEN_STORAGE_KEY);
+}
+export function removeTokenFromStorage(): void {
+  localStorage.removeItem(TOKEN_STORAGE_KEY);
+}
+
 /**
  * Generates a token by submitting the onboarding form data
  * @param formData - The form data from PrefillForm
@@ -24,10 +36,12 @@ export async function getToken(formData: PrefillFormData): Promise<string> {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(
+      const error = new Error(
         errorData.message ||
           `Failed to generate token: ${response.status} ${response.statusText}`,
       );
+      (error as Error & { status?: number }).status = response.status;
+      throw error;
     }
 
     const data: OnboardResponse = await response.json();

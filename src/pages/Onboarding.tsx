@@ -1,29 +1,24 @@
-import { AppContext } from '@/context/app';
 import {
   createOnboardingApp,
   type StageNavigation,
 } from '@worthai/onboarding-sdk';
-import {
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactElement,
-} from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import Loading from '@/components/onboarding/Loading';
 import {
   codeSnippet,
   cssSnippet,
   customCss,
 } from '@/components/onboarding/constants';
+import { getTokenFromStorage } from '@/services/token';
 
 const Onboarding = (): ReactElement => {
   const ref = useRef<HTMLDivElement>(null);
-  const { token } = useContext(AppContext);
+  const token = getTokenFromStorage() || '';
   const [navigation, setNavigation] = useState<StageNavigation>();
   const [isLoading, setLoading] = useState(true);
   const [showBorder, setShowBorder] = useState(false);
+  const [showCodeSnippet, setShowCodeSnippet] = useState(false);
+  const [showCssSnippet, setShowCssSnippet] = useState(false);
   const onboardingApp = useMemo(
     () =>
       createOnboardingApp({
@@ -48,9 +43,24 @@ const Onboarding = (): ReactElement => {
           setLoading(true);
           break;
         case 'ONBOARDING_STARTED':
-        case 'AUTHENTICATION_FAILED':
           setLoading(false);
           break;
+        case 'ROUTE_URL':
+          console.log('ROUTE_URL Event:', event.data.payload.url);
+          break;
+        case 'ERROR': {
+          const error = event.data.payload.error;
+          let message = '';
+
+          if (error instanceof Error) {
+            message = error.message;
+          } else {
+            message = (error as { message?: string })?.message ?? String(error);
+          }
+          console.error(message);
+          setLoading(false);
+          break;
+        }
         case 'STAGE_NAVIGATION':
           setNavigation(event.data.payload.stageNavigation);
           break;
@@ -68,22 +78,48 @@ const Onboarding = (): ReactElement => {
   }, [onboardingApp]);
 
   return (
-    <div className="w-4xl flex flex-col items-center self-center gap-8">
-      {isLoading ? <Loading /> : null}
-      <div
-        ref={ref}
-        className={`w-full ${isLoading ? 'hidden' : ''} ${
-          showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
-        }`}
-      />
-      <div className="flex w-full justify-between">
-        <button
-          onClick={() => setShowBorder(!showBorder)}
-          className={`button-secondary-dark ${showBorder ? 'bg-blue-600' : ''}`}
-          type="button"
-        >
-          {showBorder ? 'Hide iframe' : 'Show iframe'}
-        </button>
+    <div className="flex flex-col items-center self-center gap-4 w-full">
+      <div className="flex flex-col items-center w-full bg-white py-12">
+        <div className="w-4xl mb-8">
+          <h1 className="text-4xl font-serif text-black mb-2">
+            Onboarding Form Demo
+          </h1>
+          <p className="text-black/70">
+            Check the iframe below to see the onboarding process.
+          </p>
+        </div>
+        {isLoading ? <Loading /> : null}
+        <div
+          ref={ref}
+          className={`w-4xl ${isLoading ? 'hidden' : ''} ${
+            showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
+          }`}
+        />
+      </div>
+      <div className="flex w-4xl justify-between pb-12">
+        <div className="flex gap-4">
+          <button
+            onClick={() => setShowBorder(!showBorder)}
+            className={`button-secondary-dark ${showBorder ? 'bg-blue-600' : ''}`}
+            type="button"
+          >
+            {showBorder ? 'Hide iframe' : 'Show iframe'}
+          </button>
+          <button
+            onClick={() => setShowCodeSnippet(!showCodeSnippet)}
+            className={`button-secondary-dark ${showCodeSnippet ? 'bg-blue-600' : ''}`}
+            type="button"
+          >
+            {showCodeSnippet ? 'Hide code snippet' : 'Show code snippet'}
+          </button>
+          <button
+            onClick={() => setShowCssSnippet(!showCssSnippet)}
+            className={`button-secondary-dark ${showCssSnippet ? 'bg-blue-600' : ''}`}
+            type="button"
+          >
+            {showCssSnippet ? 'Hide CSS snippet' : 'Show CSS snippet'}
+          </button>
+        </div>
         <div className="flex gap-4">
           <button
             disabled={navigation?.prevStatus.disabled}
@@ -110,18 +146,24 @@ const Onboarding = (): ReactElement => {
           )}
         </div>
       </div>
-      <div className="w-full mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
-        <p className="text-sm text-gray-400 mb-2">SDK React Initialization:</p>
-        <pre className="text-xs text-gray-300 overflow-x-auto">
-          <code>{codeSnippet}</code>
-        </pre>
-      </div>
-      <div className="w-full mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
-        <p className="text-sm text-gray-400 mb-2">Theme CSS:</p>
-        <pre className="text-xs text-gray-300 overflow-x-auto">
-          <code>{cssSnippet}</code>
-        </pre>
-      </div>
+      {showCodeSnippet && (
+        <div className="w-4xl mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
+          <p className="text-sm text-gray-400 mb-2">
+            SDK React Initialization:
+          </p>
+          <pre className="text-xs text-gray-300 overflow-x-auto">
+            <code>{codeSnippet}</code>
+          </pre>
+        </div>
+      )}
+      {showCssSnippet && (
+        <div className="w-4xl mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
+          <p className="text-sm text-gray-400 mb-2">Theme CSS:</p>
+          <pre className="text-xs text-gray-300 overflow-x-auto">
+            <code>{cssSnippet}</code>
+          </pre>
+        </div>
+      )}
     </div>
   );
 };
