@@ -1,0 +1,37 @@
+name: Semgrep Scan - Onboarding SDK Reference Implementation
+
+on:
+  pull_request:
+    paths:
+      - 'worth-sdk/onboarding-sdk-reference-implementation/**'
+      - '.github/workflows/semgrep-onboarding-sdk.yml'
+
+jobs:
+  semgrep-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/owasp-top-ten
+            p/typescript
+            p/javascript
+          generateSarif: "1"
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          path: worth-sdk/onboarding-sdk-reference-implementation
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep.sarif
+
