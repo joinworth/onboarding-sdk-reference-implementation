@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - 'worth-sdk/onboarding-sdk-reference-implementation/**'
-      - '.github/workflows/semgrep-onboarding-sdk.yml'
+      - 'worth-sdk/onboarding-sdk-reference-implementation/.github/workflows/semgrep-onboarding-sdk.yml'
 
 jobs:
   semgrep-scan:
@@ -27,6 +27,17 @@ jobs:
 
       - name: Install Semgrep
         run: pip install semgrep
+
+      - name: Verify directory exists
+        run: |
+          if [ ! -d "worth-sdk/onboarding-sdk-reference-implementation" ]; then
+            echo "Directory worth-sdk/onboarding-sdk-reference-implementation does not exist"
+            echo "Current directory structure:"
+            ls -la
+            echo "worth-sdk directory structure:"
+            ls -la worth-sdk/ || echo "worth-sdk directory does not exist"
+            exit 1
+          fi
 
       - name: Run Semgrep scan
         working-directory: worth-sdk/onboarding-sdk-reference-implementation
