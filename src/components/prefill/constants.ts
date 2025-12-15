@@ -3,7 +3,7 @@ import type { PrefillFormData } from '@/types/prefill';
 export const getInitialFormData = (): PrefillFormData => {
   const randomNumber = Math.floor(Math.random() * 1000000);
   return {
-    external_id: `sdk-demo-1-${randomNumber}`,
+    external_id: `sdk-demo-${randomNumber}`,
     name: 'sdk demo 1',
     address_line_1: '601-7 Sansburys Way',
     address_city: 'West Palm Beach',
