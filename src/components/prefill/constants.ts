@@ -26,7 +26,7 @@ export const getInitialFormData = (): PrefillFormData => {
     owner1_ownership_percentage: 100,
     applicant_first_name: 'Leslie',
     applicant_last_name: 'Knope',
-    applicant_email: 'leslie.knope+1@joinworth.com',
+    applicant_email: `leslie.knope+${randomNumber}@joinworth.com`,
     applicant_subrole_code: 'owner',
     generate_invite_link: true,
     is_simple_flow: true,
