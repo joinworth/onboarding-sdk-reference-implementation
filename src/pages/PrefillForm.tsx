@@ -1,6 +1,6 @@
 import ApplicantInfo from '@/components/prefill/ApplicantInfo';
 import BusinessInfo from '@/components/prefill/BusinessInfo';
-import { initialFormData } from '@/components/prefill/constants';
+import { getInitialFormData } from '@/components/prefill/constants';
 import FormSection from '@/components/prefill/FormSection';
 import OwnerInfo from '@/components/prefill/OwnerInfo';
 import { convertFormValue } from '@/components/prefill/utils';
@@ -10,7 +10,7 @@ import { useState, type FormEvent, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
 
 const PrefillForm = (): ReactElement => {
-  const [formData, setFormData] = useState<PrefillFormData>(initialFormData);
+  const [formData, setFormData] = useState<PrefillFormData>(getInitialFormData());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -81,7 +81,7 @@ const PrefillForm = (): ReactElement => {
             <button
               type="button"
               className="button-secondary-dark cursor-pointer"
-              onClick={() => setFormData(initialFormData)}
+              onClick={() => setFormData(getInitialFormData())}
             >
               Reset
             </button>
