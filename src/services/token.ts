@@ -22,7 +22,7 @@ export function removeTokenFromStorage(): void {
  * @throws Error if the request fails
  */
 export async function getToken(formData: PrefillFormData): Promise<string> {
-  const apiUrl = 'https://api-dev.joinworth.ai';
+  const apiUrl = 'https://api-staging.joinworth.ai';
 
   try {
     const response = await fetch(apiUrl, {
