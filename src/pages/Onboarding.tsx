@@ -82,6 +82,7 @@ const Onboarding = (): ReactElement => {
           break;
         }
         case 'STAGE_NAVIGATION':
+          console.log('Stage navigation: ', event.data.payload.stageNavigation);
           setNavigation(event.data.payload.stageNavigation);
           break;
         default:
