@@ -21,6 +21,7 @@ This reference implementation showcases how to:
 - Node.js 18+ and npm
 - A valid invite token from Worth AI
 - Access to the Worth AI onboarding environment
+- @worthai/onboarding-sdk version 2.0.0 or higher
 
 ## Installation
 
@@ -112,6 +113,10 @@ useEffect(() => {
         setLoading(false);
         break;
       }
+      case 'ROUTE_URL': {
+        console.log('Current onboarding app url: ', event.data.payload.url);
+        break;
+      }
       case 'STAGE_NAVIGATION':
         setNavigation(event.data.payload.stageNavigation);
         break;
@@ -126,6 +131,7 @@ useEffect(() => {
       container.removeChild(onboardingApp.iframe);
     }
     subscription.unsubscribe();
+    onboardingApp.cleanup();
   };
 }, [onboardingApp]);
 ```
@@ -138,6 +144,7 @@ The SDK emits various events that you can subscribe to:
 
 - `AUTHENTICATING`: Fired when authentication starts
 - `ONBOARDING_STARTED`: Fired when onboarding begins
+- `ROUTE_URL`: Fired when the onboarding app URL changes (useful for tracking navigation)
 - `ERROR`: Fired when an error occurs (including authentication failures)
 - `STAGE_NAVIGATION`: Fired when navigation state changes (enables/disables buttons)
 
@@ -161,8 +168,13 @@ The navigation state is available through the `STAGE_NAVIGATION` event, which pr
 - `prevStatus`: Previous button state (disabled/enabled)
 - `nextStatus`: Next button state (disabled/enabled, visible, isSubmit)
 - `skipStatus`: Skip button state (disabled/enabled)
+- `isInitialStage`: Boolean indicating if the user is on the first stage
+- `isLastStage`: Boolean indicating if the user is on the final stage
 
-**Note**: Navigation buttons are automatically hidden when the onboarding is loading or completed.
+**Note**: Navigation buttons are automatically hidden when the onboarding is loading or completed. The implementation handles navigation intelligently:
+
+- Back button navigates to the prefill form when on the initial stage
+- Next button triggers completion when on the last stage
 
 #### Custom Styling
 
@@ -228,6 +240,8 @@ The application follows this flow:
    - Displays the onboarding iframe during the flow
    - Shows success message when the process completes
    - Hides navigation buttons when loading or completed
+   - Provides toggle buttons to show/hide iframe border, code snippet, and CSS snippet
+   - Handles intelligent navigation (back to prefill form on initial stage, completion on last stage)
 
 ### Landing Page
 
@@ -289,6 +303,7 @@ For complete API documentation, refer to the [@worthai/onboarding-sdk](https://w
 - `onboardingApp.prev()`: Navigate to previous stage
 - `onboardingApp.skip()`: Skip current stage
 - `onboardingApp.setCustomCss(css)`: Apply custom CSS styles
+- `onboardingApp.cleanup()`: Clean up resources when unmounting (should be called in useEffect cleanup)
 
 ## Examples
 
@@ -297,13 +312,14 @@ For complete API documentation, refer to the [@worthai/onboarding-sdk](https://w
 See `src/pages/Onboarding.tsx` for a complete working example that includes:
 
 - SDK initialization
-- Event subscription
-- Navigation controls
+- Event subscription (including `ROUTE_URL` event)
+- Navigation controls with intelligent stage handling
 - Loading state management
 - Success message display
 - Iframe hiding on completion
+- Toggle buttons for iframe border, code snippet, and CSS snippet display
 - Custom styling
-- Cleanup on unmount
+- Proper cleanup on unmount (including `cleanup()` method call)
 
 ### Token Management
 
@@ -333,9 +349,10 @@ The token is retrieved from localStorage in the Onboarding component and passed 
 
 1. **Iframe not loading**: Ensure your `origin` URL is correct and accessible
 2. **Authentication failing**: Verify your `inviteToken` is valid and not expired. Check the `ERROR` event for specific error messages
-3. **Navigation buttons not working**: Check that you're subscribed to `STAGE_NAVIGATION` events
+3. **Navigation buttons not working**: Check that you're subscribed to `STAGE_NAVIGATION` events and that navigation state is properly set
 4. **Styling not applying**: Ensure `setCustomCss` is called after creating the app instance
 5. **Token not found**: Ensure the token is saved to localStorage before navigating to the onboarding page
+6. **Memory leaks**: Make sure to call `onboardingApp.cleanup()` in your useEffect cleanup function to properly dispose of resources
 
 ## Contributing
 
