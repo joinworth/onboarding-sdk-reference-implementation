@@ -2,7 +2,14 @@ import {
   createOnboardingApp,
   type StageNavigation,
 } from '@worthai/onboarding-sdk';
-import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactElement,
+} from 'react';
 import Loading from '@/components/onboarding/Loading';
 import Success from '@/components/onboarding/Success';
 import {
@@ -11,10 +18,12 @@ import {
   customCss,
 } from '@/components/onboarding/constants';
 import { getTokenFromStorage } from '@/services/token';
+import { useNavigate } from 'react-router';
 
 const Onboarding = (): ReactElement => {
   const ref = useRef<HTMLDivElement>(null);
   const token = getTokenFromStorage() || '';
+  const navigate = useNavigate();
   const [navigation, setNavigation] = useState<StageNavigation>();
   const [isLoading, setLoading] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
@@ -30,6 +39,22 @@ const Onboarding = (): ReactElement => {
       }),
     [token],
   );
+
+  const handleBackButton = useCallback(() => {
+    if (navigation?.isInitialStage) {
+      navigate('/prefill-form');
+    } else {
+      onboardingApp.prev();
+    }
+  }, [navigation, onboardingApp, navigate]);
+
+  const handleNextButton = useCallback(() => {
+    if (navigation?.isLastStage) {
+      setIsComplete(true);
+    } else {
+      onboardingApp.next();
+    }
+  }, [navigation, onboardingApp]);
 
   onboardingApp.setCustomCss(customCss);
 
@@ -48,23 +73,11 @@ const Onboarding = (): ReactElement => {
           setLoading(false);
           break;
         case 'ROUTE_URL': {
-          const url = event.data.payload.url;
-          if (url === '/summary') {
-            setIsComplete(true);
-            setLoading(false);
-          }
+          console.log('Current onboarding app url: ', event.data.payload.url);
           break;
         }
         case 'ERROR': {
-          const error = event.data.payload.error;
-          let message = '';
-
-          if (error instanceof Error) {
-            message = error.message;
-          } else {
-            message = (error as { message?: string })?.message ?? String(error);
-          }
-          console.error(message);
+          console.error(event.data.payload.error.message);
           setLoading(false);
           break;
         }
@@ -81,6 +94,7 @@ const Onboarding = (): ReactElement => {
         container.removeChild(onboardingApp.iframe);
       }
       subscription.unsubscribe();
+      onboardingApp.cleanup();
     };
   }, [onboardingApp]);
 
@@ -132,7 +146,7 @@ const Onboarding = (): ReactElement => {
           <div className="flex gap-4">
             <button
               disabled={navigation?.prevStatus.disabled}
-              onClick={() => onboardingApp.prev()}
+              onClick={handleBackButton}
               className="button-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Back
@@ -147,7 +161,7 @@ const Onboarding = (): ReactElement => {
             {navigation?.nextStatus.visible && (
               <button
                 disabled={navigation?.nextStatus.disabled}
-                onClick={() => onboardingApp.next()}
+                onClick={handleNextButton}
                 className="button-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {navigation?.nextStatus.isSubmit ? 'Submit' : 'Next'}

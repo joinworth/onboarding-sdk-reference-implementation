@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Link } from 'react-router';
 import logo from '@/assets/logo.png';
 import './Header.css';
@@ -14,8 +14,8 @@ const Header = (): ReactElement => {
           <Link to="/" className="header-btn">
             Product
           </Link>
-          <Link to="/prefill-form" className="header-btn">
-            Demo
+          <Link to={'/onboarding'} className="header-btn">
+            Onboarding
           </Link>
           <Link
             to="https://github.com/joinworth/onboarding-sdk-reference-implementation"

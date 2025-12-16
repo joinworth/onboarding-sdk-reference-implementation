@@ -25,6 +25,22 @@ const codeSnippet = `
     [token],
   );
   
+  const handleBackButton = useCallback(() => {
+    if (navigation?.isInitialStage) {
+      navigate('/prefill-form');
+    } else {
+      onboardingApp.prev();
+    }
+  }, [navigation, onboardingApp, navigate]);
+
+  const handleNextButton = useCallback(() => {
+    if (navigation?.isLastStage) {
+      setIsComplete(true);
+    } else {
+      onboardingApp.next();
+    }
+  }, [navigation, onboardingApp]);
+
   onboardingApp.setCustomCss(customCss);
 
   useEffect(() => {
@@ -44,22 +60,13 @@ const codeSnippet = `
         case 'ONBOARDING_STARTED':
           setLoading(false);
           break;
-        case 'ROUTE_URL':
-          console.log('ROUTE_URL Event:', event.data.payload.url);
+        case 'ROUTE_URL': {
+          console.log('Current onboarding app url: ', event.data.payload.url);
           break;
+        }
         case 'ERROR': {
-          const error = event.data.payload.error;
-          let message = '';
-
-          if (error instanceof Error) {
-            message = error.message;
-          } else {
-            message = (error as { message?: string })?.message ?? String(error);
-          }
-          
           // This is a placeholder for the error message. In production, you should handle the error appropriately.
-          console.error(message);
-          
+          console.error(event.data.payload.error.message);
           setLoading(false);
           break;
         }
@@ -77,6 +84,7 @@ const codeSnippet = `
         container.removeChild(onboardingApp.iframe);
       }
       subscription.unsubscribe();
+      onboardingApp.cleanup();
     };
   }, [onboardingApp]);
   `;
