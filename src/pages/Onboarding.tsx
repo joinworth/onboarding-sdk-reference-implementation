@@ -33,7 +33,7 @@ const Onboarding = (): ReactElement => {
   const onboardingApp = useMemo(
     () =>
       createOnboardingApp({
-        origin: 'https://app.staging.joinworth.com',
+        origin: 'https://app.dev.joinworth.com',
         inviteToken: token,
         mode: 'embedded',
       }),
