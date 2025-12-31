@@ -19,6 +19,7 @@ import {
 } from '@/components/onboarding/constants';
 import { useNavigate } from 'react-router';
 import { useWorthContext } from '@/components/Worth/useWorthContext';
+import { ORIGIN } from '@/constants/urls';
 
 const Onboarding = (): ReactElement => {
   const ref = useRef<HTMLDivElement>(null);
@@ -33,7 +34,7 @@ const Onboarding = (): ReactElement => {
   const onboardingApp = useMemo(
     () =>
       createOnboardingApp({
-        origin: 'https://app.dev.joinworth.com',
+        origin: ORIGIN,
         inviteToken: onboardingInviteToken,
         mode: 'embedded',
       }),

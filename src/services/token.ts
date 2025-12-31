@@ -1,3 +1,4 @@
+import { API_URL } from '@/constants/urls';
 import type { PrefillFormData } from '@/types/prefill';
 interface OnboardResponse {
   invitation_token: string;
@@ -10,7 +11,7 @@ interface OnboardResponse {
  * @throws Error if the request fails
  */
 export async function getToken(formData: PrefillFormData): Promise<string> {
-  const apiUrl = 'https://api-dev.joinworth.ai';
+  const apiUrl = API_URL;
 
   try {
     const response = await fetch(apiUrl, {
