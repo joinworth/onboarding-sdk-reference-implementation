@@ -17,12 +17,12 @@ import {
   cssSnippet,
   customCss,
 } from '@/components/onboarding/constants';
-import { getTokenFromStorage } from '@/services/token';
 import { useNavigate } from 'react-router';
+import { useWorthContext } from '@/components/Worth/useWorthContext';
 
 const Onboarding = (): ReactElement => {
   const ref = useRef<HTMLDivElement>(null);
-  const token = getTokenFromStorage() || '';
+  const { onboardingInviteToken } = useWorthContext();
   const navigate = useNavigate();
   const [navigation, setNavigation] = useState<StageNavigation>();
   const [isLoading, setLoading] = useState(true);
@@ -33,11 +33,11 @@ const Onboarding = (): ReactElement => {
   const onboardingApp = useMemo(
     () =>
       createOnboardingApp({
-        origin: 'https://app.staging.joinworth.com',
-        inviteToken: token,
+        origin: 'https://app.dev.joinworth.com',
+        inviteToken: onboardingInviteToken,
         mode: 'embedded',
       }),
-    [token],
+    [],
   );
 
   const handleBackButton = useCallback(() => {

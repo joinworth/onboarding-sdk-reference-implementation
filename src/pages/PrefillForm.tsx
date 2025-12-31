@@ -4,13 +4,16 @@ import { getInitialFormData } from '@/components/prefill/constants';
 import FormSection from '@/components/prefill/FormSection';
 import OwnerInfo from '@/components/prefill/OwnerInfo';
 import { convertFormValue } from '@/components/prefill/utils';
-import { getToken, saveTokenToStorage } from '@/services/token';
+import { useWorthContext } from '@/components/Worth/useWorthContext';
+import { getToken } from '@/services/token';
 import type { PrefillFormData } from '@/types/prefill';
 import { useState, type FormEvent, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
 
 const PrefillForm = (): ReactElement => {
-  const [formData, setFormData] = useState<PrefillFormData>(getInitialFormData());
+  const { setOnboardingInviteToken } = useWorthContext();
+  const [formData, setFormData] =
+    useState<PrefillFormData>(getInitialFormData());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -35,7 +38,7 @@ const PrefillForm = (): ReactElement => {
 
     try {
       const token = await getToken(formData);
-      saveTokenToStorage(token);
+      setOnboardingInviteToken(token);
       navigate('/onboarding');
     } catch (error) {
       console.error('Error submitting form:', error);
