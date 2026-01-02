@@ -2,14 +2,7 @@ import {
   createOnboardingApp,
   type StageNavigation,
 } from '@worthai/onboarding-sdk';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactElement,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Loading from '@/components/onboarding/Loading';
 import Success from '@/components/onboarding/Success';
 import {
@@ -17,12 +10,13 @@ import {
   cssSnippet,
   customCss,
 } from '@/components/onboarding/constants';
-import { getTokenFromStorage } from '@/services/token';
 import { useNavigate } from 'react-router';
+import { useWorthContext } from '@/components/Worth/useWorthContext';
+import { ORIGIN } from '@/constants/urls';
 
-const Onboarding = (): ReactElement => {
+const Onboarding = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const token = getTokenFromStorage() || '';
+  const { onboardingInviteToken } = useWorthContext();
   const navigate = useNavigate();
   const [navigation, setNavigation] = useState<StageNavigation>();
   const [isLoading, setLoading] = useState(true);
@@ -33,33 +27,36 @@ const Onboarding = (): ReactElement => {
   const onboardingApp = useMemo(
     () =>
       createOnboardingApp({
-        origin: 'https://app.staging.joinworth.com',
-        inviteToken: token,
+        origin: ORIGIN,
+        inviteToken: onboardingInviteToken,
         mode: 'embedded',
       }),
-    [token],
+    [],
   );
 
-  const handleBackButton = useCallback(() => {
+  const handleBackButton = () => {
     if (navigation?.isInitialStage) {
       navigate('/prefill-form');
     } else {
       onboardingApp.prev();
     }
-  }, [navigation, onboardingApp, navigate]);
+  };
 
-  const handleNextButton = useCallback(() => {
+  const handleNextButton = () => {
     if (navigation?.isLastStage) {
       setIsComplete(true);
     } else {
       onboardingApp.next();
     }
-  }, [navigation, onboardingApp]);
+  };
 
-  onboardingApp.setCustomCss(customCss);
+  useMemo(() => {
+    onboardingApp.setCustomCss(customCss);
+  }, []);
 
   useEffect(() => {
     const container = ref.current;
+
     if (!container) return;
 
     container.appendChild(onboardingApp.iframe);
@@ -97,7 +94,7 @@ const Onboarding = (): ReactElement => {
       subscription.unsubscribe();
       onboardingApp.cleanup();
     };
-  }, [onboardingApp]);
+  }, []);
 
   return (
     <div className="flex flex-col items-center self-center gap-4 w-full">

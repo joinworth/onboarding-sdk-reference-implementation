@@ -1,18 +1,7 @@
+import { API_URL } from '@/constants/urls';
 import type { PrefillFormData } from '@/types/prefill';
 interface OnboardResponse {
   invitation_token: string;
-}
-
-const TOKEN_STORAGE_KEY = 'onboarding_token';
-
-export function saveTokenToStorage(token: string): void {
-  localStorage.setItem(TOKEN_STORAGE_KEY, token);
-}
-export function getTokenFromStorage(): string | null {
-  return localStorage.getItem(TOKEN_STORAGE_KEY);
-}
-export function removeTokenFromStorage(): void {
-  localStorage.removeItem(TOKEN_STORAGE_KEY);
 }
 
 /**
@@ -22,7 +11,7 @@ export function removeTokenFromStorage(): void {
  * @throws Error if the request fails
  */
 export async function getToken(formData: PrefillFormData): Promise<string> {
-  const apiUrl = 'https://api-staging.joinworth.ai';
+  const apiUrl = API_URL;
 
   try {
     const response = await fetch(apiUrl, {
