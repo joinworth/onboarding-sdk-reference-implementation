@@ -11,7 +11,7 @@ import {
   customCss,
 } from '@/components/onboarding/constants';
 import { useNavigate } from 'react-router';
-import { useWorthContext } from '@/components/Worth/useWorthContext';
+import { useWorthContext } from '@/components/Worthx/useWorthContext';
 import { ORIGIN } from '@/constants/urls';
 
 const Onboarding = () => {
