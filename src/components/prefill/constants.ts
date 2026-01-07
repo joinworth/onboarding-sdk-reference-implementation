@@ -27,7 +27,7 @@ export const getInitialFormData = (): PrefillFormData => {
     applicant_first_name: '',
     applicant_last_name: '',
     applicant_email: '',
-    applicant_subrole_code: '',
+    applicant_subrole_code: 'owner',
     generate_invite_link: true,
     is_simple_flow: true,
   };

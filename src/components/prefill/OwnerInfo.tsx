@@ -50,7 +50,6 @@ const OwnerInfo = ({ formData, onChange }: OwnerInfoProps): ReactElement => (
       type="date"
       value={formData.owner1_dob}
       onChange={onChange}
-      required
     />
     <FormField
       label="Address Line 1"
@@ -63,7 +62,6 @@ const OwnerInfo = ({ formData, onChange }: OwnerInfoProps): ReactElement => (
       name="owner1_address_city"
       value={formData.owner1_address_city}
       onChange={onChange}
-      required
     />
     <FormField
       label="State"
