@@ -1,9 +1,9 @@
 import type { PrefillFormData } from '@/types/prefill';
+import { v4 as uuidv4 } from 'uuid';
 
 export const getInitialFormData = (): PrefillFormData => {
-  const randomNumber = Math.floor(Math.random() * 1000000);
   return {
-    external_id: `sdk-demo-${randomNumber}`,
+    external_id: `sdk-demo-${uuidv4()}`,
     name: 'sdk demo 1',
     address_line_1: '601-7 Sansburys Way',
     address_city: 'West Palm Beach',
