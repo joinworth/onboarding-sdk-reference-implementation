@@ -1,9 +1,9 @@
 import type { PrefillFormData } from '@/types/prefill';
-import { v4 as uuidv4 } from 'uuid';
 
 export const getInitialFormData = (): PrefillFormData => {
+  const randomNumber = Math.floor(Math.random() * 100000000);
   return {
-    external_id: `sdk-demo-${uuidv4()}`,
+    external_id: `sdk-demo-${randomNumber}`,
     name: 'sdk demo 1',
     address_line_1: '601-7 Sansburys Way',
     address_city: 'West Palm Beach',
@@ -24,17 +24,26 @@ export const getInitialFormData = (): PrefillFormData => {
     owner1_title: '',
     owner1_owner_type: '',
     owner1_ownership_percentage: 0,
-    applicant_first_name: '',
-    applicant_last_name: '',
-    applicant_email: '',
+    applicant_first_name: 'Leslie',
+    applicant_last_name: 'Knope',
+    applicant_email: `leslie.knope+${randomNumber}@joinworth.com`,
     applicant_subrole_code: 'owner',
     generate_invite_link: true,
     is_simple_flow: true,
   };
 };
 
-export const countryOptions = [{ value: 'US', label: 'United States' }];
+export const countryOptions = [
+  { value: '', label: '- Select Country -' },
+  { value: 'US', label: 'United States' },
+];
 
-export const ownerTypeOptions = [{ value: 'CONTROL', label: 'Control' }];
+export const ownerTypeOptions = [
+  { value: '', label: '- Select Owner Type -' },
+  { value: 'CONTROL', label: 'Control' },
+];
 
-export const subroleCodeOptions = [{ value: 'owner', label: 'Owner' }];
+export const subroleCodeOptions = [
+  { value: '', label: '- Select Subrole Code -' },
+  { value: 'owner', label: 'Owner' },
+];
