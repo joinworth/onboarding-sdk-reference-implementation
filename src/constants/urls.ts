@@ -1,2 +1,2 @@
-export const API_URL = 'https://api-dev.joinworth.ai';
-export const ORIGIN = 'https://app.dev.joinworth.com';
+export const API_URL = 'https://api-staging.joinworth.ai';
+export const ORIGIN = 'https://app.staging.joinworth.com';
