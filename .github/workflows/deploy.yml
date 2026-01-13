@@ -30,6 +30,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -45,13 +47,13 @@ jobs:
           VITE_API_URL: ${{ vars.API_URL }}
           VITE_ORIGIN: ${{ vars.ORIGIN }}
 
-      - name: Debug - Print environment info
+      - name: Deployment details check
         if: (github.ref_name == 'main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
         run: |
           echo "Event name: ${{ github.event_name }}"
-          echo "Ref name: ${{ github.ref_name }}"
-          echo "Selected environment: ${{ inputs.environment || 'development' }}"
-          echo "Has AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}"
+          echo "Branch being deployed: ${{ github.ref_name }}"
+          echo "Full ref: ${{ github.ref }}"
+          echo "Target environment: ${{ inputs.environment || 'development' }}"
 
       - name: Configure AWS credentials
         if: (github.ref_name == 'main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
@@ -65,5 +67,7 @@ jobs:
         if: (github.ref_name == 'main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
         run: |
           aws s3 sync dist/ s3://${{ secrets.S3_MOCK_WEBSITE_BUCKET_NAME }} --delete
-          echo "Application deployed to S3 bucket: ${{ secrets.S3_MOCK_WEBSITE_BUCKET_NAME }}"
-          echo "Environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || 'development' }}"
+          echo "✅ Deployment complete!"
+          echo "   Branch: ${{ github.ref_name }}"
+          echo "   Environment: ${{ inputs.environment || 'development' }}"
+          echo "   S3 Bucket: ${{ secrets.S3_MOCK_WEBSITE_BUCKET_NAME }}"
