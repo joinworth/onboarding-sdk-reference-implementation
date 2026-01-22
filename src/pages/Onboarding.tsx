@@ -50,10 +50,6 @@ const Onboarding = () => {
     }
   };
 
-  useMemo(() => {
-    onboardingApp.setCustomCss(customCss);
-  }, []);
-
   useEffect(() => {
     const container = ref.current;
 
@@ -73,6 +69,11 @@ const Onboarding = () => {
           console.log('Current onboarding app url: ', event.data.payload.url);
           break;
         }
+        case 'IFRAME_INITIALIZED':
+          onboardingApp.setCustomCss(
+            customCss
+          );
+          break;
         case 'ERROR': {
           alert(event.data.payload.error.message);
           setLoading(false);
