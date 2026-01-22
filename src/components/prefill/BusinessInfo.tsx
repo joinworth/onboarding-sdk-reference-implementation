@@ -61,7 +61,6 @@ const BusinessInfo = ({
       name="tin"
       value={formData.tin}
       onChange={onChange}
-      required
     />
   </>
 );
