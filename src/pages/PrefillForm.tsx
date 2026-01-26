@@ -66,7 +66,7 @@ const PrefillForm = (): ReactElement => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="sdk-form space-y-6">
           <FormSection title="Business Information">
             <BusinessInfo formData={formData} onChange={handleInputChange} />
           </FormSection>
