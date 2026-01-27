@@ -12,11 +12,13 @@ import {
 } from '@/components/onboarding/constants';
 import { useNavigate } from 'react-router';
 import { useWorthContext } from '@/components/worth/useWorthContext';
+import { useSnackbar } from 'notistack';
 import { ORIGIN } from '@/constants/urls';
 
 const Onboarding = () => {
   const ref = useRef<HTMLDivElement>(null);
   const { onboardingInviteToken } = useWorthContext();
+  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [navigation, setNavigation] = useState<StageNavigation>();
   const [isLoading, setLoading] = useState(true);
@@ -74,11 +76,13 @@ const Onboarding = () => {
             customCss
           );
           break;
-        case 'ERROR': {
-          alert(event.data.payload.error.message);
+        case 'ERROR':
+          enqueueSnackbar(event.data.payload.error.message, {
+            anchorOrigin: { vertical: 'top', horizontal: 'right' },
+            variant: 'error',
+          });
           setLoading(false);
           break;
-        }
         case 'STAGE_NAVIGATION':
           console.log('Stage navigation: ', event.data.payload.stageNavigation);
           setNavigation(event.data.payload.stageNavigation);
@@ -112,9 +116,8 @@ const Onboarding = () => {
         {isComplete ? <Success /> : null}
         <div
           ref={ref}
-          className={`w-4xl ${isLoading || isComplete ? 'hidden' : ''} ${
-            showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
-          }`}
+          className={`w-4xl ${isLoading || isComplete ? 'hidden' : ''} ${showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
+            }`}
         />
       </div>
       <div className="flex w-4xl justify-between pb-12">
