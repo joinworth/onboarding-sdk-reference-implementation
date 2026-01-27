@@ -2,6 +2,7 @@ import ApplicantInfo from '@/components/prefill/ApplicantInfo';
 import BusinessInfo from '@/components/prefill/BusinessInfo';
 import { getInitialFormData } from '@/components/prefill/constants';
 import FormSection from '@/components/prefill/FormSection';
+import OwnerInfo from '@/components/prefill/OwnerInfo';
 import { convertFormValue } from '@/components/prefill/utils';
 import { useWorthContext } from '@/components/worth/useWorthContext';
 import { getToken } from '@/services/token';
@@ -69,6 +70,10 @@ const PrefillForm = (): ReactElement => {
         <form onSubmit={handleSubmit} className="sdk-form space-y-6">
           <FormSection title="Business Information">
             <BusinessInfo formData={formData} onChange={handleInputChange} />
+          </FormSection>
+
+          <FormSection title="Owner Information">
+            <OwnerInfo formData={formData} onChange={handleInputChange} />
           </FormSection>
 
           <FormSection title="Applicant Information">
