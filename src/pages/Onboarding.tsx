@@ -86,11 +86,14 @@ const Onboarding = () => {
           setNavigation(event.data.payload.stageNavigation);
           break;
         case 'DETACHED_EVENT':
+          console.log('Detached event: ', event.data.payload);
           switch (event.data.payload.type) {
             case 'IDENTITY_VERIFICATION_PASS_SESSION':
+              console.log('Identity verification pass session');
               setIsComplete(true);
               break;
             case 'IDENTITY_VERIFICATION_FAIL_SESSION':
+              console.log('Identity verification fail session');
               setIsComplete(true);
               break;
             default:
