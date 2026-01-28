@@ -72,9 +72,7 @@ const Onboarding = () => {
           break;
         }
         case 'IFRAME_INITIALIZED':
-          onboardingApp.setCustomCss(
-            customCss
-          );
+          onboardingApp.setCustomCss(customCss);
           break;
         case 'ERROR':
           enqueueSnackbar(event.data.payload.error.message, {
@@ -86,6 +84,18 @@ const Onboarding = () => {
         case 'STAGE_NAVIGATION':
           console.log('Stage navigation: ', event.data.payload.stageNavigation);
           setNavigation(event.data.payload.stageNavigation);
+          break;
+        case 'DETACHED_EVENT':
+          switch (event.data.payload.type) {
+            case 'IDENTITY_VERIFICATION_PASS_SESSION':
+              setIsComplete(true);
+              break;
+            case 'IDENTITY_VERIFICATION_FAIL_SESSION':
+              setIsComplete(true);
+              break;
+            default:
+              break;
+          }
           break;
         default:
           break;
@@ -116,8 +126,9 @@ const Onboarding = () => {
         {isComplete ? <Success /> : null}
         <div
           ref={ref}
-          className={`w-4xl ${isLoading || isComplete ? 'hidden' : ''} ${showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
-            }`}
+          className={`w-4xl ${isLoading || isComplete ? 'hidden' : ''} ${
+            showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
+          }`}
         />
       </div>
       <div className="flex w-4xl justify-between pb-12">
