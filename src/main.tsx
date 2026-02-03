@@ -3,9 +3,12 @@ import { RouterProvider } from 'react-router';
 import { WorthProvider } from '@/components/worth/WorthProvider';
 import router from './router';
 import './index.css';
+import { SnackbarProvider } from 'notistack';
 
 createRoot(document.getElementById('root')!).render(
   <WorthProvider>
-    <RouterProvider router={router} />
+    <SnackbarProvider>
+      <RouterProvider router={router} />
+    </SnackbarProvider>
   </WorthProvider>,
 );
