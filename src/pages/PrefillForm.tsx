@@ -7,6 +7,7 @@ import { convertFormValue } from '@/components/prefill/utils';
 import { useWorthContext } from '@/components/worth/useWorthContext';
 import { getToken } from '@/services/token';
 import type { PrefillFormData } from '@/types/prefill';
+import { useSnackbar } from 'notistack';
 import { useState, type FormEvent, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -16,6 +17,7 @@ const PrefillForm = (): ReactElement => {
     useState<PrefillFormData>(getInitialFormData());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar()
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -41,15 +43,11 @@ const PrefillForm = (): ReactElement => {
       setOnboardingInviteToken(token);
       navigate('/onboarding');
     } catch (error) {
-      console.error('Error submitting form:', error);
-      if (
-        error instanceof Error &&
-        (error as Error & { status?: number }).status === 400
-      ) {
-        alert(
-          'This business already exists, change the External ID and Business Name fields',
-        );
-      }
+      enqueueSnackbar('Error submitting form.', {
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        variant: 'error',
+      });
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
