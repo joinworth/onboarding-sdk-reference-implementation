@@ -4,6 +4,7 @@ import App from '../App';
 import PrefillForm from '../pages/PrefillForm';
 import Landing from '../pages/Landing';
 import Onboarding from '../pages/Onboarding';
+import DemoFlows from '../pages/DemoFlows';
 
 const routes: RouteObject[] = [
   {
@@ -28,6 +29,10 @@ const routes: RouteObject[] = [
       {
         path: '/onboarding',
         element: <Onboarding />,
+      },
+      {
+        path: '/demo-flows',
+        element: <DemoFlows />,
       },
     ],
   },
