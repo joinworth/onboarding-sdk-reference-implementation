@@ -5,5 +5,4 @@ export const IdvIcon: React.FC<React.HTMLAttributes<SVGSVGElement>> = (props) =>
             fill="currentColor"
         />
     </svg>
-
 }
