@@ -61,7 +61,7 @@ const IdvQuickAdd = (): ReactElement => {
                         IDV Quick Add
                     </h1>
                     <p className="text-white/70">
-                        Enter the minimum required information to run an IDV quick add.
+                        Enter the required information to run an IDV quick add.
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="sdk-form space-y-6">
