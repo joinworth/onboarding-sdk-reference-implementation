@@ -39,7 +39,7 @@ const IdvQuickAdd = (): ReactElement => {
         setIsSubmitting(true);
 
         try {
-            const token = await getToken(formData);
+            const token = await getToken({...formData, flow: 'selfie-only'});
             setOnboardingInviteToken(token);
             navigate('/onboarding');
         } catch (error) {

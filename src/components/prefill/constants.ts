@@ -29,7 +29,7 @@ export const getInitialFormData = (): PrefillFormData => {
     applicant_email: `leslie.knope+${randomNumber}@joinworth.com`,
     applicant_subrole_code: 'owner',
     generate_invite_link: true,
-    is_simple_flow: true,
+    flow: 'full-flow',
   };
 };
 
