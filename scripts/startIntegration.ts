@@ -24,8 +24,6 @@ const startIntegration = async () => {
       ],
     });
 
-  process.env.INTEGRATION_MODE = INTEGRATION_MODE;
-
   switch (INTEGRATION_MODE) {
     case 'cloud':
       {
