@@ -18,8 +18,8 @@ const Headline = (): ReactElement => {
           intelligent automation.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Link to="/prefill-form" className="button-primary">
-            Launch Demo
+          <Link to="/demo-flows" className="button-secondary-dark">
+            Customize Demo
           </Link>
           <Link
             to="https://github.com/joinworth/onboarding-sdk-reference-implementation"

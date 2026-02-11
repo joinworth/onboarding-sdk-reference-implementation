@@ -14,9 +14,6 @@ const Header = (): ReactElement => {
           <Link to="/" className="header-btn">
             Product
           </Link>
-          <Link to={'/onboarding'} className="header-btn">
-            Onboarding
-          </Link>
           <Link
             to="https://github.com/joinworth/onboarding-sdk-reference-implementation"
             className="header-btn"
@@ -25,34 +22,7 @@ const Header = (): ReactElement => {
           >
             Docs
           </Link>
-          <div className="relative">
-            <button
-              className="header-btn flex items-center gap-1 cursor-pointer"
-              aria-expanded="false"
-              aria-haspopup="true"
-              aria-label="Resources menu"
-            >
-              Resources
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 11 11"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="transition-transform"
-                aria-hidden="true"
-              >
-                <path
-                  d="M3 4.5L6 7.5L9 4.5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
-          <Link to="/prefill-form" className="button-primary">
+          <Link to="/demo-flows" className="button-primary">
             Start demo
           </Link>
         </div>

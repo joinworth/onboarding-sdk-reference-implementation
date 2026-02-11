@@ -1,0 +1,11 @@
+import { Outlet } from "react-router";
+
+const DemoFlows: React.FC = () => {
+    return <div className="min-h-fit py-12 px-6">
+        <div className="max-w-5xl mx-auto">
+            <Outlet />
+        </div>
+    </div>;
+};
+
+export default DemoFlows;

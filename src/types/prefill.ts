@@ -25,5 +25,5 @@ export interface PrefillFormData {
   applicant_email: string;
   applicant_subrole_code: string;
   generate_invite_link: boolean;
-  is_simple_flow: boolean;
+  flow: 'full-flow' | 'selfie-only';
 }

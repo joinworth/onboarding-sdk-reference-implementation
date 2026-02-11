@@ -1,12 +1,11 @@
 import type { ReactElement } from 'react';
-import type { PrefillFormData } from '@/types/prefill';
 
 interface FormFieldProps {
   label: string;
-  name: keyof PrefillFormData;
+  name?: string;
   type?: string;
   required?: boolean;
-  value: string | number | boolean;
+  value?: string | number | boolean;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => void;
