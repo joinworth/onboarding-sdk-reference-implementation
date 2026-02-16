@@ -12,19 +12,21 @@ import { useState, type FormEvent, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
 
 const IdvQuickAdd = (): ReactElement => {
-    const { setOnboardingInviteToken } = useWorthContext();
+    const { setOnboardingInviteToken, setFlow } = useWorthContext();
     const [formData, setFormData] =
         useState<PrefillFormData>(getInitialFormData());
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
-    const { enqueueSnackbar } = useSnackbar()
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     ): void => {
         const { name, value, type } = e.target;
         const checked =
-            type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
+            type === 'checkbox'
+                ? (e.target as HTMLInputElement).checked
+                : undefined;
 
         const convertedValue = convertFormValue(value, type, checked);
 
@@ -34,12 +36,15 @@ const IdvQuickAdd = (): ReactElement => {
         }));
     };
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+    const handleSubmit = async (
+        e: FormEvent<HTMLFormElement>,
+    ): Promise<void> => {
         e.preventDefault();
         setIsSubmitting(true);
 
         try {
-            const token = await getToken({...formData, flow: 'selfie-only'});
+            const token = await getToken({ ...formData, flow: 'selfie-only' });
+            setFlow('selfie-only');
             setOnboardingInviteToken(token);
             navigate('/onboarding');
         } catch (error) {
@@ -66,15 +71,24 @@ const IdvQuickAdd = (): ReactElement => {
                 </div>
                 <form onSubmit={handleSubmit} className="sdk-form space-y-6">
                     <FormSection title="Business Information">
-                        <BusinessInfo formData={formData} onChange={handleInputChange} />
+                        <BusinessInfo
+                            formData={formData}
+                            onChange={handleInputChange}
+                        />
                     </FormSection>
 
                     <FormSection title="Owner Information">
-                        <OwnerInfo formData={formData} onChange={handleInputChange} />
+                        <OwnerInfo
+                            formData={formData}
+                            onChange={handleInputChange}
+                        />
                     </FormSection>
 
                     <FormSection title="Applicant Information">
-                        <ApplicantInfo formData={formData} onChange={handleInputChange} />
+                        <ApplicantInfo
+                            formData={formData}
+                            onChange={handleInputChange}
+                        />
                     </FormSection>
 
                     <div className="flex justify-end gap-4 pt-4">
