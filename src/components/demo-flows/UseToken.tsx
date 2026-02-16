@@ -6,13 +6,14 @@ import { useNavigate } from "react-router";
 
 const UseToken: React.FC = () => {
     const [token, setToken] = useState('');
-    const { setOnboardingInviteToken } = useWorthContext();
+    const { setOnboardingInviteToken, setFlow } = useWorthContext();
     const navigate = useNavigate()
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
 
         try {
+            setFlow(undefined)
             setOnboardingInviteToken(token);
             navigate('/onboarding');
         } catch (error) {

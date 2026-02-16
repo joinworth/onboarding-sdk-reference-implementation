@@ -1,3 +1,5 @@
+export type PrefillFlow = 'full-flow' | 'selfie-only';
+
 export interface PrefillFormData {
   external_id: string;
   name: string;
@@ -25,5 +27,5 @@ export interface PrefillFormData {
   applicant_email: string;
   applicant_subrole_code: string;
   generate_invite_link: boolean;
-  flow: 'full-flow' | 'selfie-only';
+  flow: PrefillFlow;
 }
