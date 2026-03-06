@@ -59,12 +59,23 @@ const Onboarding = () => {
 
     container.appendChild(onboardingApp.iframe);
     (container.children[0] as HTMLElement).style.minHeight = '700px';
+
+    const loadingTimeout = setTimeout(() => {
+      console.warn('Onboarding SDK loading timeout');
+      enqueueSnackbar('Onboarding timed out loading', {
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        variant: 'error',
+      });
+      setLoading(false);
+    }, 20000); // 20 second timeout for loading
+
     const subscription = onboardingApp.subscribe((event) => {
       switch (event.data.type) {
         case 'AUTHENTICATING':
           setLoading(true);
           break;
         case 'ONBOARDING_STARTED':
+          clearTimeout(loadingTimeout);
           setLoading(false);
           break;
         case 'ROUTE_URL': {
@@ -75,6 +86,7 @@ const Onboarding = () => {
           onboardingApp.setCustomCss(customCss);
           break;
         case 'ERROR':
+          clearTimeout(loadingTimeout);
           enqueueSnackbar(event.data.payload.error.message, {
             anchorOrigin: { vertical: 'top', horizontal: 'right' },
             variant: 'error',
@@ -82,6 +94,7 @@ const Onboarding = () => {
           setLoading(false);
           break;
         case 'STAGE_NAVIGATION':
+          clearTimeout(loadingTimeout);
           console.log('Stage navigation: ', event.data.payload.stageNavigation);
           setNavigation(event.data.payload.stageNavigation);
           break;
@@ -110,6 +123,7 @@ const Onboarding = () => {
     });
 
     return () => {
+      clearTimeout(loadingTimeout);
       if (container && container.contains(onboardingApp.iframe)) {
         container.removeChild(onboardingApp.iframe);
       }
