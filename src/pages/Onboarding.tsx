@@ -56,6 +56,7 @@ const Onboarding = () => {
   useEffect(() => {
     const container = ref.current;
     container?.appendChild(onboardingApp.iframe);
+    onboardingApp.iframe.style.minHeight = '700px';
 
     const subscription = onboardingApp.subscribe((event) => {
       switch (event.data.type) {
