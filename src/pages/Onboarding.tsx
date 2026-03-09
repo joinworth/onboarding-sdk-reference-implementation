@@ -17,9 +17,9 @@ import { ORIGIN } from '@/constants/urls';
 
 const Onboarding = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   const { onboardingInviteToken, flow } = useWorthContext();
   const { enqueueSnackbar } = useSnackbar();
-  const navigate = useNavigate();
   const [navigation, setNavigation] = useState<StageNavigation>();
   const [isLoading, setLoading] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
@@ -32,6 +32,7 @@ const Onboarding = () => {
         origin: ORIGIN,
         inviteToken: onboardingInviteToken,
         mode: 'embedded',
+        loadingTimeout: 15000 //15s (Minimum valid value is 15s or greater)
       }),
     [],
   );
@@ -54,50 +55,60 @@ const Onboarding = () => {
 
   useEffect(() => {
     const container = ref.current;
-
-    if (!container) return;
-
-    container.appendChild(onboardingApp.iframe);
-    (container.children[0] as HTMLElement).style.minHeight = '700px';
-
-    const loadingTimeout = setTimeout(() => {
-      console.warn('Onboarding SDK loading timeout');
-      enqueueSnackbar('Onboarding timed out loading', {
-        anchorOrigin: { vertical: 'top', horizontal: 'right' },
-        variant: 'error',
-      });
-      setLoading(false);
-    }, 20000); // 20 second timeout for loading
+    container?.appendChild(onboardingApp.iframe);
+    onboardingApp.iframe.style.minHeight = '700px';
 
     const subscription = onboardingApp.subscribe((event) => {
       switch (event.data.type) {
+        /** Fired while the iframe is authenticating. */
         case 'AUTHENTICATING':
           setLoading(true);
+          console.log('Authentication in progress...')
           break;
+        /** Fired when the onboarding app is restarted after LOADING_TIMED_OUT */
+        case 'RESTARTING':
+          setLoading(true);
+          break;
+        /** Onboarding flow has started; hide loading state. */
         case 'ONBOARDING_STARTED':
-          clearTimeout(loadingTimeout);
           setLoading(false);
           break;
-        case 'ROUTE_URL': {
-          console.log('Current onboarding app url: ', event.data.payload.url);
+        /** Loading exceeded timeout; fallback event to hide loading state. */
+        case 'LOADING_TIMED_OUT':
+          console.log('Also, use this event if you need to restart the applicant webapp after an initialization failure.')
+          setLoading(false);
           break;
-        }
+        /** Auth result: if not authenticated, hide loading and show session-expired snackbar. */
+        case 'AUTHENTICATION_STATUS':
+          {
+            const isAuthenticated = event.data.payload.isAuthenticated
+            if (!isAuthenticated) {
+              setLoading(false);
+              enqueueSnackbar('Session Expired', {
+                anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                variant: 'error',
+              });
+            }
+          }
+          break;
+        /** Iframe application has been mounted */
         case 'IFRAME_INITIALIZED':
           onboardingApp.setCustomCss(customCss);
           break;
+        /** App error: show error message in snackbar and hide loading. */
         case 'ERROR':
-          clearTimeout(loadingTimeout);
           enqueueSnackbar(event.data.payload.error.message, {
             anchorOrigin: { vertical: 'top', horizontal: 'right' },
             variant: 'error',
           });
           setLoading(false);
           break;
+        /** Stage changed; update Back/Skip/Next button state and stage info. */
         case 'STAGE_NAVIGATION':
-          clearTimeout(loadingTimeout);
           console.log('Stage navigation: ', event.data.payload.stageNavigation);
           setNavigation(event.data.payload.stageNavigation);
           break;
+        /** Special event from iframe modal windows. */
         case 'DETACHED_EVENT':
           {
             if (flow === 'selfie-only') {
@@ -117,16 +128,18 @@ const Onboarding = () => {
             }
           }
           break;
+        /** New route in iframe (Event used mainly for debug purposes); update current route and append to history. */
+        case 'ROUTE_URL': {
+          console.log('Current onboarding app url: ', event.data.payload.url);
+          break;
+        }
         default:
           break;
       }
     });
 
     return () => {
-      clearTimeout(loadingTimeout);
-      if (container && container.contains(onboardingApp.iframe)) {
-        container.removeChild(onboardingApp.iframe);
-      }
+      container?.removeChild(onboardingApp.iframe);
       subscription.unsubscribe();
       onboardingApp.cleanup();
     };
@@ -147,9 +160,8 @@ const Onboarding = () => {
         {isComplete ? <Success /> : null}
         <div
           ref={ref}
-          className={`w-4xl ${isLoading || isComplete ? 'hidden' : ''} ${
-            showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
-          }`}
+          className={`w-4xl ${isLoading || isComplete ? 'hidden' : ''} ${showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
+            }`}
         />
       </div>
       <div className="flex w-4xl justify-between pb-12">
