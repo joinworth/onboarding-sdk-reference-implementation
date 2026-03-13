@@ -7,7 +7,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Loading from '@/components/onboarding/Loading';
 import Success from '@/components/onboarding/Success';
 import {
-  codeSnippet,
   cssSnippet,
   customCss,
 } from '@/components/onboarding/constants';
@@ -15,6 +14,7 @@ import { useNavigate } from 'react-router';
 import { useWorthContext } from '@/components/worth/useWorthContext';
 import { useSnackbar } from 'notistack';
 import { ORIGIN } from '@/constants/urls';
+import { Code } from '@/components/utils/Code';
 
 const Onboarding = () => {
   const divRef = useRef<HTMLDivElement>(null);
@@ -234,9 +234,11 @@ const Onboarding = () => {
           <p className="text-sm text-gray-400 mb-2">
             SDK React Initialization:
           </p>
-          <pre className="text-xs text-gray-300 overflow-x-auto">
-            <code>{codeSnippet}</code>
-          </pre>
+          <Code
+            type="path"
+            codePath="pages/Onboarding.tsx"
+            language="typescript"
+          />
         </div>
       )}
       {showCssSnippet && (
