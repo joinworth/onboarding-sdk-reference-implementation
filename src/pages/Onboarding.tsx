@@ -7,7 +7,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Loading from '@/components/onboarding/Loading';
 import Success from '@/components/onboarding/Success';
 import {
-  cssSnippet,
   customCss,
 } from '@/components/onboarding/constants';
 import { useNavigate } from 'react-router';
@@ -245,7 +244,7 @@ const Onboarding = () => {
         <div className="w-4xl mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
           <p className="text-sm text-gray-400 mb-2">Theme CSS:</p>
           <pre className="text-xs text-gray-300 overflow-x-auto">
-            <code>{cssSnippet}</code>
+            <code>{customCss}</code>
           </pre>
         </div>
       )}
