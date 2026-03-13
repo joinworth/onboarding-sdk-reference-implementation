@@ -1,6 +1,7 @@
 import {
   createOnboardingApp,
   type StageNavigation,
+  type OnboardingAppSubscription,
 } from '@worthai/onboarding-sdk';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Loading from '@/components/onboarding/Loading';
@@ -16,7 +17,8 @@ import { useSnackbar } from 'notistack';
 import { ORIGIN } from '@/constants/urls';
 
 const Onboarding = () => {
-  const ref = useRef<HTMLDivElement>(null);
+  const divRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<{ subscription?: OnboardingAppSubscription }>({});
   const navigate = useNavigate();
   const { onboardingInviteToken, flow } = useWorthContext();
   const { enqueueSnackbar } = useSnackbar();
@@ -46,19 +48,20 @@ const Onboarding = () => {
   };
 
   const handleNextButton = () => {
-    if (navigation?.isLastStage) {
-      setIsComplete(true);
-    } else {
-      onboardingApp.next();
-    }
+    onboardingApp.next();
   };
 
+  const unmountOnboardingApp = () => {
+    divRef.current?.removeChild(onboardingApp.iframe);
+    ref.current.subscription?.unsubscribe();
+    onboardingApp.cleanup();
+  }
+
   useEffect(() => {
-    const container = ref.current;
-    container?.appendChild(onboardingApp.iframe);
+    divRef.current?.appendChild(onboardingApp.iframe);
     onboardingApp.iframe.style.minHeight = '700px';
 
-    const subscription = onboardingApp.subscribe((event) => {
+    ref.current.subscription = onboardingApp.subscribe((event) => {
       switch (event.data.type) {
         /** Fired while the iframe is authenticating. */
         case 'AUTHENTICATING':
@@ -108,6 +111,14 @@ const Onboarding = () => {
           console.log('Stage navigation: ', event.data.payload.stageNavigation);
           setNavigation(event.data.payload.stageNavigation);
           break;
+        /** Fired when the full onboarding is submitted. (Not triggered in 'selfie-only' flow) */
+        case 'ONBOARDING_COMPLETED':
+          // You can add your custom redirection logic here when the onboarding is completed.
+          // Make sure to unmount the onboarding app after completion to stop it's background processes.
+          setLoading(false);
+          setIsComplete(true);
+          unmountOnboardingApp();
+          break;
         /** Special event from iframe modal windows. */
         case 'DETACHED_EVENT':
           {
@@ -117,10 +128,12 @@ const Onboarding = () => {
                 case 'IDENTITY_VERIFICATION_PASS_SESSION':
                   console.log('Identity verification pass session');
                   setIsComplete(true);
+                  unmountOnboardingApp();
                   break;
                 case 'IDENTITY_VERIFICATION_FAIL_SESSION':
                   console.log('Identity verification fail session');
                   setIsComplete(true);
+                  unmountOnboardingApp();
                   break;
                 default:
                   break;
@@ -128,9 +141,10 @@ const Onboarding = () => {
             }
           }
           break;
-        /** New route in iframe (Event used mainly for debug purposes); update current route and append to history. */
+        /** New route in iframe */
         case 'ROUTE_URL': {
           console.log('Current onboarding app url: ', event.data.payload.url);
+          document.getElementById('main-layout')?.scrollTo(0, 0);
           break;
         }
         default:
@@ -138,11 +152,7 @@ const Onboarding = () => {
       }
     });
 
-    return () => {
-      container?.removeChild(onboardingApp.iframe);
-      subscription.unsubscribe();
-      onboardingApp.cleanup();
-    };
+    return () => { unmountOnboardingApp() };
   }, []);
 
   return (
@@ -159,7 +169,7 @@ const Onboarding = () => {
         {isLoading ? <Loading /> : null}
         {isComplete ? <Success /> : null}
         <div
-          ref={ref}
+          ref={divRef}
           className={`w-4xl ${isLoading || isComplete ? 'hidden' : ''} ${showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
             }`}
         />

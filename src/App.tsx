@@ -11,6 +11,7 @@ const App = (): ReactElement => {
       <div className="flex flex-col h-screen w-screen bg-blue-950">
         <Header />
         <div
+          id="main-layout"
           ref={scrollContainerRef}
           className="flex flex-col flex-1 overflow-y-auto"
         >
