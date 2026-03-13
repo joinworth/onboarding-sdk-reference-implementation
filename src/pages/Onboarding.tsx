@@ -52,9 +52,11 @@ const Onboarding = () => {
   };
 
   const unmountOnboardingApp = () => {
-    divRef.current?.removeChild(onboardingApp.iframe);
-    ref.current.subscription?.unsubscribe();
-    onboardingApp.cleanup();
+    if (divRef.current?.hasChildNodes()) {
+      divRef.current?.removeChild(onboardingApp.iframe);
+      ref.current.subscription?.unsubscribe();
+      onboardingApp.cleanup();
+    }
   }
 
   useEffect(() => {
@@ -65,6 +67,7 @@ const Onboarding = () => {
       switch (event.data.type) {
         /** Fired while the iframe is authenticating. */
         case 'AUTHENTICATING':
+          setIsComplete(false)
           setLoading(true);
           console.log('Authentication in progress...')
           break;
