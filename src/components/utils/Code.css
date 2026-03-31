@@ -1,0 +1,8 @@
+.code-snippet pre {
+  margin: 0;
+}
+.code-snippet pre code {
+  text-wrap: auto;
+  white-space: pre-wrap !important;
+  font-size: 12px;
+}
