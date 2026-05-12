@@ -42,7 +42,7 @@ const FullOnboarding = (): ReactElement => {
         setIsSubmitting(true);
 
         try {
-            const token = await getToken(formData);
+            const token = await getToken({ ...formData});
             setFlow('full-flow');
             setOnboardingInviteToken(token);
             navigate('/onboarding');

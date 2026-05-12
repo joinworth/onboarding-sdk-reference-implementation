@@ -9,10 +9,18 @@ const DemoFlowsOptions: React.FC = () => {
     const cards = [
         {
             icon: <IdvIcon className="text-white" />,
-            title: 'IDV Quick Add',
+            title: 'IDV Quick Add (UK)',
             description: 'Streamlined flow to run selfie checks without onboarding form fields.',
             onClick: () => {
-                navigate('idv-quick-add')
+                navigate('idv-quick-add-uk')
+            }
+        },
+        {
+            icon: <IdvIcon className="text-white" />,
+            title: 'IDV Quick Add (US)',
+            description: 'Streamlined flow to run selfie checks without onboarding form fields.',
+            onClick: () => {
+                navigate('idv-quick-add-us')
             }
         },
         {
@@ -34,7 +42,7 @@ const DemoFlowsOptions: React.FC = () => {
     ];
 
     return <>
-        <div className="mb-8">
+        <div className="mb-">
             <h1 className="text-4xl font-serif text-white mb-2">
                 Select a Demo
             </h1>
@@ -42,7 +50,7 @@ const DemoFlowsOptions: React.FC = () => {
                 Choose a demo below to start the onboarding process.
             </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
             {cards.map((card, index) => (
                 <div
                     onClick={card.onClick}
