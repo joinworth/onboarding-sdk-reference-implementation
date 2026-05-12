@@ -1,4 +1,4 @@
-export type PrefillFlow = 'full-flow' | 'selfie-only';
+export type PrefillFlow = 'full-flow' | 'selfie-only' | 'selfie-only-uk';
 
 export interface PrefillFormData {
   external_id: string;

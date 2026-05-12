@@ -34,7 +34,8 @@ const routes: RouteObject[] = [
         element: <DemoFlows />,
         children: [
           { index: true, element: <DemoFlowsOptions /> },
-          { path: 'idv-quick-add', element: <IdvQuickAdd /> },
+          { path: 'idv-quick-add-us', element: <IdvQuickAdd country="US" /> },
+          { path: 'idv-quick-add-uk', element: <IdvQuickAdd country="UK" /> },
           { path: 'use-token', element: <UseToken /> },
           { path: 'full-onboarding', element: <FullOnboarding /> },
         ]

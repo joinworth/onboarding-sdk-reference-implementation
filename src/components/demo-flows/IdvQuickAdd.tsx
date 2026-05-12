@@ -1,5 +1,6 @@
 import ApplicantInfo from '@/components/prefill/ApplicantInfo';
 import BusinessInfo from '@/components/prefill/BusinessInfo';
+import type { PrefillCountry } from '@/components/prefill/constants';
 import { getInitialFormData } from '@/components/prefill/constants';
 import FormSection from '@/components/prefill/FormSection';
 import OwnerInfo from '@/components/prefill/OwnerInfo';
@@ -11,10 +12,14 @@ import { useSnackbar } from 'notistack';
 import { useState, type FormEvent, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
 
-const IdvQuickAdd = (): ReactElement => {
+interface IdvQuickAddProps {
+    country: PrefillCountry;
+}
+
+const IdvQuickAdd = ({ country }: IdvQuickAddProps): ReactElement => {
     const { setOnboardingInviteToken, setFlow } = useWorthContext();
     const [formData, setFormData] =
-        useState<PrefillFormData>(getInitialFormData());
+        useState<PrefillFormData>(getInitialFormData(country));
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
@@ -43,8 +48,9 @@ const IdvQuickAdd = (): ReactElement => {
         setIsSubmitting(true);
 
         try {
-            const token = await getToken({ ...formData, flow: 'selfie-only' });
-            setFlow('selfie-only');
+            const flow = country === 'UK' ? 'selfie-only-uk' : 'selfie-only';
+            const token = await getToken({ ...formData, flow});
+            setFlow(flow);
             setOnboardingInviteToken(token);
             navigate('/onboarding');
         } catch (error) {
@@ -58,12 +64,14 @@ const IdvQuickAdd = (): ReactElement => {
         }
     };
 
+    const regionLabel = country === 'UK' ? '(UK)' : '(US)';
+
     return (
         <div className="min-h-fit py-12 px-6">
             <div className="max-w-4xl mx-auto">
                 <div className="mb-8">
                     <h1 className="text-4xl font-serif text-white mb-2">
-                        IDV Quick Add
+                        IDV Quick Add {regionLabel}
                     </h1>
                     <p className="text-white/70">
                         Enter the required information to run an IDV quick add.
@@ -74,6 +82,7 @@ const IdvQuickAdd = (): ReactElement => {
                         <BusinessInfo
                             formData={formData}
                             onChange={handleInputChange}
+                            country={country}
                         />
                     </FormSection>
 
@@ -81,6 +90,7 @@ const IdvQuickAdd = (): ReactElement => {
                         <OwnerInfo
                             formData={formData}
                             onChange={handleInputChange}
+                            country={country}
                         />
                     </FormSection>
 
@@ -95,7 +105,9 @@ const IdvQuickAdd = (): ReactElement => {
                         <button
                             type="button"
                             className="button-secondary-dark cursor-pointer"
-                            onClick={() => setFormData(getInitialFormData())}
+                            onClick={() =>
+                                setFormData(getInitialFormData(country))
+                            }
                         >
                             Reset
                         </button>
