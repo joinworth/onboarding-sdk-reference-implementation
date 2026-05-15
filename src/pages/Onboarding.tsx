@@ -40,7 +40,7 @@ const Onboarding = () => {
 
   const handleBackButton = () => {
     if (navigation?.isInitialStage) {
-      navigate('/prefill-form');
+      navigate('/demo-flows');
     } else {
       onboardingApp.prev();
     }
