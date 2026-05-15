@@ -124,7 +124,7 @@ const Onboarding = () => {
         /** Special event from iframe modal windows. */
         case 'DETACHED_EVENT':
           {
-            if (flow === 'selfie-only') {
+            if (flow === 'selfie-only' || flow === 'selfie-only-uk') {
               console.log('Detached event: ', event.data.payload);
               switch (event.data.payload.type) {
                 case 'IDENTITY_VERIFICATION_PASS_SESSION':
