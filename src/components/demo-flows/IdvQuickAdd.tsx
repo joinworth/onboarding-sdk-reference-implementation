@@ -48,7 +48,7 @@ const IdvQuickAdd = ({ country }: IdvQuickAddProps): ReactElement => {
         setIsSubmitting(true);
 
         try {
-            const flow = 'selfie-only';
+            const flow = country === 'UK' ? 'selfie-only-uk' : 'selfie-only';
             const token = await getToken({ ...formData, flow});
             setFlow(flow);
             setOnboardingInviteToken(token);
