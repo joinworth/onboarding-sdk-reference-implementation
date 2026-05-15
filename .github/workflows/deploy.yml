@@ -72,12 +72,12 @@ jobs:
           echo "   Environment: ${{ inputs.environment || 'development' }}"
           echo "   S3 Bucket: ${{ secrets.S3_MOCK_WEBSITE_BUCKET_NAME }}"
 
-      # CloudFront: worth-dev-onboarding-sdk-mock-website-distribution — set variable CLOUDFRONT_WORTH_DEV_ONBOARDING_SDK_MOCK_WEBSITE_DISTRIBUTION_ID to the AWS distribution ID (format E…)
+      # CloudFront: worth-dev-onboarding-sdk-mock-website-distribution — set variable CLOUDFRONT_DISTRIBUTION_ID to the AWS distribution ID (format E…)
       - name: Invalidate CloudFront cache
         if: (github.ref_name == 'main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
         run: |
           INVALIDATION_ID=$(aws cloudfront create-invalidation \
-            --distribution-id "${{ vars.CLOUDFRONT_WORTH_DEV_ONBOARDING_SDK_MOCK_WEBSITE_DISTRIBUTION_ID }}" \
+            --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" \
             --paths "/*" \
             --query 'Invalidation.Id' \
             --output text)
