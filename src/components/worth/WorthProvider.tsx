@@ -15,7 +15,10 @@ const clearLegacyLocalStorage = () => {
 };
 
 export const WorthProvider: React.FC<WorthProviderProps> = ({ children }) => {
-  const [flow, setFlow] = useState<PrefillFlow>();
+  const [flow, setFlow] = useState<PrefillFlow | undefined>(() => {
+    const stored = sessionStorage.getItem(FLOW_STORAGE_KEY);
+    return stored ? (stored as PrefillFlow) : undefined;
+  });
   const [onboardingInviteToken, setOnboardingInviteToken] = useState(
     () => sessionStorage.getItem(TOKEN_STORAGE_KEY) || '',
   );

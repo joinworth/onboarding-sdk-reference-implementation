@@ -13,7 +13,7 @@ const UseToken: React.FC = () => {
         e.preventDefault();
 
         try {
-            setFlow(undefined)
+            setFlow('use-token');
             setOnboardingInviteToken(token);
             navigate('/onboarding');
         } catch (error) {
