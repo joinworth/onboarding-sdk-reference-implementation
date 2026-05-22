@@ -68,7 +68,7 @@ const Onboarding = () => {
         case 'AUTHENTICATING':
           setIsComplete(false)
           setLoading(true);
-          console.log('Authentication in progress sdk folder...')
+          console.log('Authentication in progress...')
           break;
         /** Fired when the onboarding app is restarted after LOADING_TIMED_OUT */
         case 'RESTARTING':
