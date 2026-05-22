@@ -72,10 +72,12 @@ const Onboarding = () => {
           break;
         /** Fired when the onboarding app is restarted after LOADING_TIMED_OUT */
         case 'RESTARTING':
+          console.log('Onboarding flow is restarting...');
           setLoading(true);
           break;
         /** Onboarding flow has started; hide loading state. */
         case 'ONBOARDING_STARTED':
+          console.log('Onboarding flow has started; hide loading state.');
           setLoading(false);
           break;
         /** Loading exceeded timeout; fallback event to hide loading state. */
@@ -86,6 +88,7 @@ const Onboarding = () => {
         /** Auth result: if not authenticated, hide loading and show session-expired snackbar. */
         case 'AUTHENTICATION_STATUS':
           {
+            console.log('Authentication status: ', event.data.payload.isAuthenticated);
             const isAuthenticated = event.data.payload.isAuthenticated
             if (!isAuthenticated) {
               setLoading(false);
@@ -98,10 +101,12 @@ const Onboarding = () => {
           break;
         /** Iframe application has been mounted */
         case 'IFRAME_INITIALIZED':
+          console.log('Iframe initialized: ');
           onboardingApp.setCustomCss(customCss);
           break;
         /** App error: show error message in snackbar and hide loading. */
         case 'ERROR':
+          console.log('Error: ', event.data.payload.error.message);
           enqueueSnackbar(event.data.payload.error.message, {
             anchorOrigin: { vertical: 'top', horizontal: 'right' },
             variant: 'error',
@@ -115,6 +120,7 @@ const Onboarding = () => {
           break;
         /** Fired when the full onboarding is submitted. (Not triggered in 'selfie-only' flow) */
         case 'ONBOARDING_COMPLETED':
+          console.log('Onboarding completed: ');
           // You can add your custom redirection logic here when the onboarding is completed.
           // Make sure to unmount the onboarding app after completion to stop it's background processes.
           setLoading(false);
@@ -124,7 +130,11 @@ const Onboarding = () => {
         /** Special event from iframe modal windows. */
         case 'DETACHED_EVENT':
           {
-            if (flow === 'selfie-only' || flow === 'selfie-only-uk') {
+            const handlesDetachedIdvEvents =
+              flow === 'selfie-only' ||
+              flow === 'selfie-only-uk' ||
+              flow === 'use-token';
+            if (handlesDetachedIdvEvents) {
               console.log('Detached event: ', event.data.payload);
               switch (event.data.payload.type) {
                 case 'IDENTITY_VERIFICATION_PASS_SESSION':
