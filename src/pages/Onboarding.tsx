@@ -2,7 +2,7 @@ import {
   createOnboardingApp,
   type StageNavigation,
   type OnboardingAppSubscription,
-} from '@worthai/onboarding-sdk';
+} from '@worthai/onboarding-sdk-v2';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Loading from '@/components/onboarding/Loading';
 import Success from '@/components/onboarding/Success';

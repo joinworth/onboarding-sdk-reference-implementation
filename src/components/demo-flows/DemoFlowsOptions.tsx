@@ -25,15 +25,23 @@ const DemoFlowsOptions: React.FC = () => {
         },
         {
             icon: <StackIcon />,
-            title: 'Use a Token',
+            title: 'Use a Token (SDK 2)',
             description: 'Bring your own token and enter it into the UI to begin onboarding experience.',
             onClick: () => {
                 navigate('use-token')
             }
         },
         {
+            icon: <StackIcon />,
+            title: 'Use a Token (SDK 3)',
+            description: 'Bring your own token and enter it into the UI to begin the SDK 3 embedded onboarding experience.',
+            onClick: () => {
+                navigate('use-token-sdk-3')
+            }
+        },
+        {
             icon: <FormIcon />,
-            title: 'Full Onboarding',
+            title: 'Full Onboarding (SDK 2)',
             description: 'Display all fields and pages associated to the onboarding experience.',
             onClick: () => {
                 navigate('full-onboarding')
@@ -50,7 +58,7 @@ const DemoFlowsOptions: React.FC = () => {
                 Choose a demo below to start the onboarding process.
             </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-8">
             {cards.map((card, index) => (
                 <div
                     onClick={card.onClick}
