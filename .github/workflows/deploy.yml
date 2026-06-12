@@ -21,6 +21,7 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   build-and-deploy:
@@ -37,9 +38,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22.14.0"
+          registry-url: https://npm.pkg.github.com
+          scope: "@joinworth"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Demo Website
         run: npm run build

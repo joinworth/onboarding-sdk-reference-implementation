@@ -29,25 +29,30 @@ This reference implementation showcases how to:
 
 ## Installation
 
-1. Build the SDK 3 package from `onboarding-application`:
-
-```bash
-cd /Users/johnhalbert/src/github.com/joinworth/onboarding-application
-pnpm install
-pnpm run build:sdk
-```
-
-For a stronger package-contract check, run:
-
-```bash
-pnpm run test:sdk-package
-```
-
 1. Install dependencies in this reference app:
 
 ```bash
 cd /Users/johnhalbert/src/github.com/joinworth/get-started/worth-sdk/onboarding-sdk-reference-implementation
 npm install
+```
+
+The SDK 3 package is published to GitHub Packages. If your npm config does not
+already authenticate to `npm.pkg.github.com`, configure the `@joinworth` scope
+before installing:
+
+```bash
+@joinworth:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+For local package development against a sibling `onboarding-application`
+checkout, build SDK 3 there first and temporarily point the dependency at the
+local package:
+
+```bash
+cd /Users/johnhalbert/src/github.com/joinworth/onboarding-application
+pnpm install
+pnpm run test:sdk-package
 ```
 
 1. Start the development server:
@@ -56,9 +61,9 @@ npm install
 npm run dev
 ```
 
-The reference app depends on `@worthai/onboarding-sdk` through a local
-`file:../../../onboarding-application` dependency. Rebuild SDK 3 after changes in
-`onboarding-application`, then reinstall or restart this app as needed.
+The reference app keeps the customer-facing SDK 3 import name
+`@worthai/onboarding-sdk`, but resolves it through an npm alias to the GitHub
+Package `@joinworth/onboarding-sdk`.
 
 ## SDK 2 And SDK 3 Side By Side
 
