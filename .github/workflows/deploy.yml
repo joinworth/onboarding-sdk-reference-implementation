@@ -50,6 +50,7 @@ jobs:
         run: npm run build
         env:
           VITE_API_URL: ${{ vars.API_URL }}
+          VITE_SDK3_API_URL: ${{ vars.SDK3_API_URL || vars.API_URL }}
           VITE_ORIGIN: ${{ vars.ORIGIN }}
 
       - name: Deployment details check

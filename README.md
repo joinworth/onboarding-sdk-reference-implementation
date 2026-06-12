@@ -386,7 +386,8 @@ Upon submission, the form:
 You may want to configure the following:
 
 - **Origin URL**: Update the `origin` parameter in `createOnboardingApp` to point SDK 2 to your environment
-- **API URL**: Set `VITE_API_URL` for token generation and SDK 3 `apiBaseUrl` (default `https://api-dev.joinworth.ai`)
+- **API URL**: Set `VITE_API_URL` for token generation and the SDK 2 reference API (default `https://api-dev.joinworth.ai`)
+- **SDK 3 API URL**: Set `VITE_SDK3_API_URL` for SDK 3 `apiBaseUrl` when it should use a different backend host. If omitted, SDK 3 falls back to `VITE_API_URL`.
 - **Invite Token**: Automatically generated from the prefill form, or obtain from your backend API
 
 ### Customization
@@ -481,7 +482,7 @@ the SDK 2 iframe example or the SDK 3 embedded runtime example.
 
 1. **SDK 3 package does not resolve**: Build SDK 3 in `onboarding-application` before installing this app
 2. **SDK 3 route redirects to token entry**: Paste an invite token in `/demo-flows/use-token-sdk-3` or start from a demo flow that generates one
-3. **SDK 3 mount fails**: Verify `VITE_API_URL` points to the Worth API environment that issued the invite token
+3. **SDK 3 mount fails**: Verify `VITE_SDK3_API_URL` points to the Worth API environment that issued the invite token. If `VITE_SDK3_API_URL` is omitted, SDK 3 uses `VITE_API_URL`.
 4. **Iframe not loading**: Ensure your SDK 2 `origin` URL is correct and accessible
 5. **Authentication failing**: Verify your `inviteToken` is valid and not expired. Check `onError` for SDK 3 or the `ERROR` event for SDK 2
 6. **SDK 2 navigation buttons not working**: Check that you're subscribed to `STAGE_NAVIGATION` events and that navigation state is properly set
