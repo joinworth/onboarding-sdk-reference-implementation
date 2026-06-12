@@ -1,6 +1,10 @@
 # Onboarding SDK Reference Implementation
 
-This repository serves as a reference implementation for integrating the [@worthai/onboarding-sdk](https://www.npmjs.com/package/@worthai/onboarding-sdk) into a React application. It demonstrates best practices for embedding the onboarding flow, handling events, managing navigation, and customizing the UI.
+This repository serves as a reference implementation for integrating the
+[@worthai/onboarding-sdk](https://www.npmjs.com/package/@worthai/onboarding-sdk)
+into a React application. It now demonstrates both the SDK 2 iframe integration
+and the SDK 3 embedded runtime package contract produced by
+`onboarding-application`.
 
 ## Overview
 
@@ -8,34 +12,47 @@ This reference implementation showcases how to:
 
 - Build a complete onboarding flow with a landing page and prefill form
 - Generate invitation tokens from form data
-- Initialize and embed the onboarding SDK
-- Handle SDK events (authentication, navigation, completion, etc.)
-- Control onboarding flow programmatically (next, previous, skip)
-- Apply custom CSS styling to match your brand
+- Preserve the SDK 2 iframe example for migration and parity comparison
+- Initialize and mount SDK 3 from `@worthai/onboarding-sdk`
+- Handle SDK 3 lifecycle callbacks (`onStepSubmit`, `onComplete`, `onError`)
+- Start SDK 3 from an invite-token interstitial and render a clean embedded view
 - Manage loading states during authentication
 - Display success message when onboarding completes
 - Integrate with React Router for navigation
 
 ## Prerequisites
 
-- Node.js 18+ and npm
-- A valid invite token from Worth AI
-- Access to the Worth AI onboarding environment
-- @worthai/onboarding-sdk version 2.0.0 or higher
+- Node.js and npm for the reference app
+- Node.js `>=24 <25` and pnpm for building SDK 3 in `onboarding-application`
+- A valid invite token from Worth AI for full runtime smoke tests
+- Access to the Worth AI onboarding API environment
 
 ## Installation
 
-1. Clone this repository:
+1. Install dependencies in this reference app:
 
 ```bash
-git clone https://github.com/joinworth/onboarding-sdk-reference-implementation.git
-cd onboarding-sdk-reference-implementation
+cd /Users/johnhalbert/src/github.com/joinworth/get-started/worth-sdk/onboarding-sdk-reference-implementation
+npm install
 ```
 
-1. Install dependencies:
+The SDK 3 package is published to GitHub Packages. If your npm config does not
+already authenticate to `npm.pkg.github.com`, configure the `@joinworth` scope
+before installing:
 
 ```bash
-npm install
+@joinworth:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+For local package development against a sibling `onboarding-application`
+checkout, build SDK 3 there first and temporarily point the dependency at the
+local package:
+
+```bash
+cd /Users/johnhalbert/src/github.com/joinworth/onboarding-application
+pnpm install
+pnpm run test:sdk-package
 ```
 
 1. Start the development server:
@@ -44,16 +61,103 @@ npm install
 npm run dev
 ```
 
+The reference app keeps the customer-facing SDK 3 import name
+`@worthai/onboarding-sdk`, but resolves it through an npm alias to the GitHub
+Package `@joinworth/onboarding-sdk`.
+
+## SDK 2 And SDK 3 Side By Side
+
+Both SDK generations use the package name `@worthai/onboarding-sdk`, but a single
+app can resolve only one dependency for that package name. This reference app
+therefore keeps SDK 3 on the customer-facing import:
+
+```typescript
+import { createWorthOnboarding } from '@worthai/onboarding-sdk';
+```
+
+The preserved SDK 2 iframe example uses an npm alias:
+
+```typescript
+import { createOnboardingApp } from '@worthai/onboarding-sdk-v2';
+```
+
+This allows SDK 2 and SDK 3 examples to run side by side in the same React app.
+
 ## SDK Integration
 
-### Basic Setup
+### SDK 3 Embedded Runtime
 
-The SDK is integrated in the `Onboarding` component (`src/pages/Onboarding.tsx`). Here's how it works:
+SDK 3 is demonstrated through `src/components/demo-flows/UseTokenSdk3.tsx`
+and `src/pages/OnboardingSdk3.tsx`. The demo starts at
+`/demo-flows/use-token-sdk-3`, stores the invite token in `WorthProvider`, then
+navigates to `/onboarding-sdk-3` for a clean embedded SDK view.
+
+The dedicated SDK 3 page imports from the package contract:
+
+```typescript
+import { createWorthOnboarding } from '@worthai/onboarding-sdk';
+```
+
+The SDK 3 lifecycle is DOM-first:
+
+```typescript
+const onboarding = createWorthOnboarding({
+  apiBaseUrl: 'https://api-dev.joinworth.ai',
+  inviteToken,
+  onStepSubmit: ({ inviteToken, stepId, values }) => {
+    console.log('Step submitted', { inviteToken, stepId, values });
+  },
+  onComplete: ({ inviteToken, values }) => {
+    console.log('Onboarding completed', { inviteToken, values });
+  },
+  onError: (error) => {
+    console.error(error);
+  },
+});
+
+await onboarding.mount('#worth-onboarding');
+
+// Later, for route cleanup:
+onboarding.unmount();
+```
+
+SDK 3 validates `inviteToken` during construction, so the token interstitial
+trims and stores a non-empty token before navigating to the SDK view. Direct
+visits to `/onboarding-sdk-3` without a token redirect back to the SDK 3 token
+interstitial. `mount()` is async and can reject, so the example catches mount
+failures while still keeping the visible SDK route free of host debug controls.
+
+SDK 3 also ships a browser-global build at
+`dist-sdk/sdk3/worthai-onboarding-sdk.global.js`. When loaded directly in a
+browser page, use the global namespace configured by the SDK build:
+
+```html
+<script src="/path/to/worthai-onboarding-sdk.global.js"></script>
+<script>
+  const onboarding = WorthAI.createWorthOnboarding({
+    inviteToken: 'INVITE_TOKEN',
+    onStepSubmit: (event) => console.log(event),
+    onComplete: (event) => console.log(event),
+    onError: (error) => console.error(error),
+  });
+
+  onboarding.mount('#worth-onboarding');
+</script>
+```
+
+SDK 3 supports optional `flowInput` in the public options type. This reference
+route intentionally omits it because the demo flows are selected through invite
+tokens and this app does not contain a customer-ready static flow fixture.
+
+### SDK 2 Iframe Example
+
+The SDK 2 iframe flow is preserved in `src/pages/Onboarding.tsx` at
+`/onboarding`. Here's how it works:
 
 #### 1. Install the SDK
 
 ```bash
-npm install @worthai/onboarding-sdk
+npm install @worthai/onboarding-sdk-v2@npm:@worthai/onboarding-sdk@2.0.17
 ```
 
 #### 2. Initialize the Onboarding App
@@ -62,7 +166,7 @@ npm install @worthai/onboarding-sdk
 import {
   createOnboardingApp,
   type StageNavigation,
-} from '@worthai/onboarding-sdk';
+} from '@worthai/onboarding-sdk-v2';
 import { getTokenFromStorage } from '@/services/token';
 
 const token = getTokenFromStorage() || ''; // Retrieve token from localStorage
@@ -200,7 +304,8 @@ src/
 ├── pages/
 │   ├── Landing.tsx         # Landing page with features showcase
 │   ├── PrefillForm.tsx     # Form for collecting onboarding data
-│   └── Onboarding.tsx      # Main SDK integration example
+│   ├── Onboarding.tsx      # SDK 2 iframe integration example
+│   └── OnboardingSdk3.tsx  # SDK 3 embedded runtime example
 ├── components/
 │   ├── header/
 │   │   ├── Header.tsx      # Navigation header component
@@ -235,13 +340,21 @@ The application follows this flow:
 
 1. **Landing Page** (`/`) - Welcome page with features and call-to-action
 2. **Prefill Form** (`/prefill-form`) - Collect business, owner, and applicant information
-3. **Onboarding** (`/onboarding`) - Embedded SDK flow using the generated token
+3. **Demo Flows** (`/demo-flows`) - Generate or paste invite tokens
+4. **SDK 2 Onboarding** (`/onboarding`) - Iframe SDK flow using the generated token
    - Shows loading state during authentication
    - Displays the onboarding iframe during the flow
    - Shows success message when the process completes
    - Hides navigation buttons when loading or completed
    - Provides toggle buttons to show/hide iframe border, code snippet, and CSS snippet
    - Handles intelligent navigation (back to prefill form on initial stage, completion on last stage)
+5. **SDK 3 Token Entry** (`/demo-flows/use-token-sdk-3`) - Invite-token interstitial for the SDK 3 flow
+   - Trims and stores the invite token in session-backed context
+   - Navigates to the dedicated SDK 3 view
+6. **SDK 3 Onboarding** (`/onboarding-sdk-3`) - Embedded runtime package demo
+   - Auto-mounts SDK 3 using the stored invite token
+   - Redirects back to token entry when no token is available
+   - Keeps host debug controls off the SDK view so the flow feels closer to production
 
 ### Landing Page
 
@@ -272,8 +385,8 @@ Upon submission, the form:
 
 You may want to configure the following:
 
-- **Origin URL**: Update the `origin` parameter in `createOnboardingApp` to point to your environment
-- **API URL**: Update the API endpoint in `src/services/token.ts` (currently `https://api-dev.joinworth.ai`)
+- **Origin URL**: Update the `origin` parameter in `createOnboardingApp` to point SDK 2 to your environment
+- **API URL**: Set `VITE_API_URL` for token generation and SDK 3 `apiBaseUrl` (default `https://api-dev.joinworth.ai`)
 - **Invite Token**: Automatically generated from the prefill form, or obtain from your backend API
 
 ### Customization
@@ -297,6 +410,17 @@ For complete API documentation, refer to the [@worthai/onboarding-sdk](https://w
 
 ### Main Methods
 
+SDK 3:
+
+- `createWorthOnboarding(options)`: Creates an SDK 3 onboarding instance
+- `onboarding.mount(target)`: Mounts the embedded runtime into a DOM target
+- `onboarding.unmount()`: Tears down the embedded runtime for route cleanup
+- `onStepSubmit(event)`: Observes submitted step payloads
+- `onComplete(event)`: Observes completed onboarding flows
+- `onError(error)`: Observes SDK/runtime errors
+
+SDK 2:
+
 - `createOnboardingApp(config)`: Creates a new onboarding app instance
 - `onboardingApp.subscribe(callback)`: Subscribe to SDK events
 - `onboardingApp.next()`: Navigate to next stage
@@ -309,7 +433,14 @@ For complete API documentation, refer to the [@worthai/onboarding-sdk](https://w
 
 ### Complete Integration Example
 
-See `src/pages/Onboarding.tsx` for a complete working example that includes:
+See `src/pages/OnboardingSdk3.tsx` for the SDK 3 package-contract example that includes:
+
+- ESM import from `@worthai/onboarding-sdk`
+- Auto-mounting from the token captured by `src/components/demo-flows/UseTokenSdk3.tsx`
+- `onStepSubmit`, `onComplete`, and `onError` callbacks
+- Cleanup when the React route unmounts
+
+See `src/pages/Onboarding.tsx` for the preserved SDK 2 iframe example that includes:
 
 - SDK initialization
 - Event subscription (including `ROUTE_URL` event)
@@ -328,13 +459,14 @@ The reference implementation includes a token generation and storage service in 
 - Accepts prefill form data
 - Sends a POST request to the API endpoint
 - Returns an invitation token
-- Provides functions to save, retrieve, and remove tokens from localStorage:
+- Provides functions to save, retrieve, and remove tokens:
   - `getToken(formData)`: Generates a token from form data
   - `saveTokenToStorage(token)`: Saves token to localStorage
   - `getTokenFromStorage()`: Retrieves token from localStorage
   - `removeTokenFromStorage()`: Removes token from localStorage
 
-The token is retrieved from localStorage in the Onboarding component and passed to the onboarding SDK.
+The token is stored in session storage by `WorthProvider`, then passed to either
+the SDK 2 iframe example or the SDK 3 embedded runtime example.
 
 **Note**: In production, you should:
 
@@ -347,12 +479,14 @@ The token is retrieved from localStorage in the Onboarding component and passed 
 
 ### Common Issues
 
-1. **Iframe not loading**: Ensure your `origin` URL is correct and accessible
-2. **Authentication failing**: Verify your `inviteToken` is valid and not expired. Check the `ERROR` event for specific error messages
-3. **Navigation buttons not working**: Check that you're subscribed to `STAGE_NAVIGATION` events and that navigation state is properly set
-4. **Styling not applying**: Ensure `setCustomCss` is called after creating the app instance
-5. **Token not found**: Ensure the token is saved to localStorage before navigating to the onboarding page
-6. **Memory leaks**: Make sure to call `onboardingApp.cleanup()` in your useEffect cleanup function to properly dispose of resources
+1. **SDK 3 package does not resolve**: Build SDK 3 in `onboarding-application` before installing this app
+2. **SDK 3 route redirects to token entry**: Paste an invite token in `/demo-flows/use-token-sdk-3` or start from a demo flow that generates one
+3. **SDK 3 mount fails**: Verify `VITE_API_URL` points to the Worth API environment that issued the invite token
+4. **Iframe not loading**: Ensure your SDK 2 `origin` URL is correct and accessible
+5. **Authentication failing**: Verify your `inviteToken` is valid and not expired. Check `onError` for SDK 3 or the `ERROR` event for SDK 2
+6. **SDK 2 navigation buttons not working**: Check that you're subscribed to `STAGE_NAVIGATION` events and that navigation state is properly set
+7. **SDK 2 styling not applying**: Ensure `setCustomCss` is called after creating the app instance
+8. **Memory leaks**: Make sure SDK 3 calls `unmount()` and SDK 2 calls `cleanup()` during route cleanup
 
 ## Contributing
 

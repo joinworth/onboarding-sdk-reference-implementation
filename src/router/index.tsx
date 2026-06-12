@@ -3,10 +3,12 @@ import { createBrowserRouter } from 'react-router';
 import App from '../App';
 import Landing from '../pages/Landing';
 import Onboarding from '../pages/Onboarding';
+import OnboardingSdk3 from '../pages/OnboardingSdk3';
 import DemoFlows from '../pages/DemoFlows';
 import DemoFlowsOptions from '../components/demo-flows/DemoFlowsOptions';
 import IdvQuickAdd from '../components/demo-flows/IdvQuickAdd';
 import UseToken from '../components/demo-flows/UseToken';
+import UseTokenSdk3 from '../components/demo-flows/UseTokenSdk3';
 import FullOnboarding from '../components/demo-flows/FullOnboarding';
 
 const routes: RouteObject[] = [
@@ -30,6 +32,10 @@ const routes: RouteObject[] = [
         element: <Onboarding />,
       },
       {
+        path: '/onboarding-sdk-3',
+        element: <OnboardingSdk3 />,
+      },
+      {
         path: '/demo-flows',
         element: <DemoFlows />,
         children: [
@@ -37,6 +43,7 @@ const routes: RouteObject[] = [
           { path: 'idv-quick-add-us', element: <IdvQuickAdd country="US" /> },
           { path: 'idv-quick-add-uk', element: <IdvQuickAdd country="UK" /> },
           { path: 'use-token', element: <UseToken /> },
+          { path: 'use-token-sdk-3', element: <UseTokenSdk3 /> },
           { path: 'full-onboarding', element: <FullOnboarding /> },
         ]
       },
