@@ -1,4 +1,7 @@
-import { createWorthOnboarding, type WorthOnboarding } from '@worthai/onboarding-sdk';
+import {
+  createWorthOnboarding,
+  type WorthOnboarding,
+} from '@worthai/onboarding-sdk';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router';
@@ -102,10 +105,7 @@ const OnboardingSdk3 = () => {
           {mountError}
         </div>
       )}
-      <div
-        ref={mountRef}
-        className="w-4xl min-h-[700px] bg-white"
-      />
+      <div ref={mountRef} className="w-4xl min-h-[700px] bg-white" />
     </div>
   );
 };
