@@ -9,6 +9,11 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      branch:
+        description: "Branch to deploy"
+        required: true
+        default: "main"
+        type: string
       environment:
         description: "Environment to deploy to"
         required: true
@@ -32,7 +37,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -50,14 +55,15 @@ jobs:
         run: npm run build
         env:
           VITE_API_URL: ${{ vars.API_URL }}
+          VITE_SDK3_API_URL: ${{ vars.SDK3_API_URL }}
           VITE_ORIGIN: ${{ vars.ORIGIN }}
 
       - name: Deployment details check
         if: (github.ref_name == 'main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
         run: |
           echo "Event name: ${{ github.event_name }}"
-          echo "Branch being deployed: ${{ github.ref_name }}"
-          echo "Full ref: ${{ github.ref }}"
+          echo "Branch being deployed: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.ref_name }}"
+          echo "Full ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/heads/{0}', inputs.branch) || github.ref }}"
           echo "Target environment: ${{ inputs.environment || 'development' }}"
 
       - name: Configure AWS credentials
@@ -73,7 +79,12 @@ jobs:
         run: |
           aws s3 sync dist/ s3://${{ secrets.S3_MOCK_WEBSITE_BUCKET_NAME }} --delete
           echo "✅ Deployment complete!"
-          echo "   Branch: ${{ github.ref_name }}"
+          echo "   Branch: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.ref_name }}"
           echo "   Environment: ${{ inputs.environment || 'development' }}"
           echo "   S3 Bucket: ${{ secrets.S3_MOCK_WEBSITE_BUCKET_NAME }}"
+      
+      - name: Invalidate CloudFront cache
+        if: (github.ref_name == 'main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
+        run: aws cloudfront create-invalidation --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+
 
