@@ -1,8 +1,11 @@
-import { createWorthOnboarding, type WorthOnboarding } from '@worthai/onboarding-sdk';
+import {
+  createWorthOnboarding,
+  type WorthOnboarding,
+} from '@worthai/onboarding-sdk';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router';
-import { API_URL } from '@/constants/urls';
+import { ORIGIN } from '@/constants/urls';
 import { useWorthContext } from '@/components/worth/useWorthContext';
 
 const normalizeError = (error: unknown): string => {
@@ -56,7 +59,7 @@ const OnboardingSdk3 = () => {
       try {
         setMountError('');
         onboarding = createWorthOnboarding({
-          apiBaseUrl: API_URL,
+          apiBaseUrl: ORIGIN,
           inviteToken,
           onStepSubmit: (event) => {
             console.log('SDK 3 step submitted', event);
@@ -102,10 +105,7 @@ const OnboardingSdk3 = () => {
           {mountError}
         </div>
       )}
-      <div
-        ref={mountRef}
-        className="w-4xl min-h-[700px] bg-white"
-      />
+      <div ref={mountRef} className="w-4xl min-h-[700px] bg-white" />
     </div>
   );
 };
