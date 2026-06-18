@@ -84,6 +84,6 @@ jobs:
           echo "   S3 Bucket: ${{ secrets.S3_MOCK_WEBSITE_BUCKET_NAME }}"
       
       - name: Invalidate CloudFront cache
-        run: aws cloudfront create-invalidation --distribution-id E3R8VMJ01GJQ74 --paths "/*"
+        run: aws cloudfront create-invalidation --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
 
 
