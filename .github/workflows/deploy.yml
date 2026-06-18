@@ -84,6 +84,7 @@ jobs:
           echo "   S3 Bucket: ${{ secrets.S3_MOCK_WEBSITE_BUCKET_NAME }}"
       
       - name: Invalidate CloudFront cache
+        if: (github.ref_name == 'main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch'
         run: aws cloudfront create-invalidation --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
 
 
