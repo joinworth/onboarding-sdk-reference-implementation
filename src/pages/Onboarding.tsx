@@ -3,7 +3,7 @@ import {
   type StageNavigation,
   type OnboardingAppSubscription,
 } from '@worthai/onboarding-sdk-v2';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Loading from '@/components/onboarding/Loading';
 import Success from '@/components/onboarding/Success';
 import {
@@ -27,16 +27,24 @@ const Onboarding = () => {
   const [showBorder, setShowBorder] = useState(false);
   const [showCodeSnippet, setShowCodeSnippet] = useState(false);
   const [showCssSnippet, setShowCssSnippet] = useState(false);
-  const onboardingApp = useMemo(
-    () =>
-      createOnboardingApp({
+  const initRef = useRef<{
+    timerStart: number;
+    onboardingApp: ReturnType<typeof createOnboardingApp>;
+  } | null>(null);
+  if (!initRef.current) {
+    // Benchmark SDK init and event timing from before createOnboardingApp
+    const timerStart = performance.now(); // eslint-disable-line react-hooks/purity -- intentional one-time benchmark
+    initRef.current = {
+      timerStart,
+      onboardingApp: createOnboardingApp({
         origin: ORIGIN,
         inviteToken: onboardingInviteToken,
         mode: 'embedded',
         loadingTimeout: 15000 //15s (Minimum valid value is 15s or greater)
       }),
-    [],
-  );
+    };
+  }
+  const { onboardingApp, timerStart } = initRef.current;
 
   const handleBackButton = () => {
     if (navigation?.isInitialStage) {
@@ -63,6 +71,9 @@ const Onboarding = () => {
     onboardingApp.iframe.style.minHeight = '700px';
 
     ref.current.subscription = onboardingApp.subscribe((event) => {
+      const elapsedMs = Math.round(performance.now() - timerStart);
+      console.log(`[${event.data.type}] +${elapsedMs}ms`);
+
       switch (event.data.type) {
         /** Fired while the iframe is authenticating. */
         case 'AUTHENTICATING':
