@@ -1,0 +1,67 @@
+name: Update SDK 3 dependency
+
+# Fired by onboarding-application after it publishes a new SDK 3 build to
+# GitHub Packages (@joinworth/onboarding-sdk). Repoints the SDK 3 dependency
+# to the new version, opens a PR, and enables auto-merge. On merge, deploy.yml
+# auto-deploys.
+
+on:
+  repository_dispatch:
+    types: [sdk3-published]
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: read
+
+jobs:
+  bump-sdk3:
+    name: Bump SDK 3 to ${{ github.event.client_payload.version }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          # GITHUB_TOKEN cannot push past branch protection; use a PAT/app token
+          # that is allowed to push to main (falls back to GITHUB_TOKEN if unprotected).
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+          registry-url: https://npm.pkg.github.com
+          scope: "@joinworth"
+
+      - name: Repoint SDK 3 alias and refresh lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ github.event.client_payload.version }}
+        run: |
+          # Keep the import name @worthai/onboarding-sdk; point it at the
+          # GitHub Packages @joinworth package so no source imports change.
+          npm pkg set "dependencies.@worthai/onboarding-sdk=npm:@joinworth/onboarding-sdk@${VERSION}"
+          npm install --package-lock-only --ignore-scripts
+
+      - name: Open PR and enable auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+          VERSION: ${{ github.event.client_payload.version }}
+        run: |
+          if git diff --quiet package.json package-lock.json; then
+            echo "SDK 3 already at ${VERSION}, nothing to do."
+            exit 0
+          fi
+          BRANCH="chore/bump-sdk3-${VERSION}"
+          git config user.name "release-bot"
+          git config user.email "github-actions@joinworth.com"
+          git checkout -b "$BRANCH"
+          git add package.json package-lock.json
+          git commit -m "chore: bump SDK 3 to ${VERSION}"
+          git push --force-with-lease origin "$BRANCH"
+          gh pr create --base main --head "$BRANCH" \
+            --title "chore: bump SDK 3 to ${VERSION}" \
+            --body "Automated SDK 3 bump to \`${VERSION}\` published from onboarding-application." \
+            || echo "PR already exists for $BRANCH"
+          gh pr merge "$BRANCH" --squash --delete-branch
