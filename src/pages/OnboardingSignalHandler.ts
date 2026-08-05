@@ -5,7 +5,7 @@ import { enqueueSnackbar } from "notistack";
  * Stands in for a customer host on the local dev route, where there is no host to supply `onSignal`.
  * Shaped like the handler a consumer would write — see `actions/EventSignal.README.md`.
  */
-export function handleSignal(name: WorthOnboardingSignalName, payload: Record<string, unknown>): void {
+export function handleOnboardingSignal(name: WorthOnboardingSignalName, payload: Record<string, unknown>): void {
   switch (name) {
     case WorthOnboardingLifecycleSignal.STEP_ENTERED:
       enqueueSnackbar(`Entered step ${payload.stepId}`, {
