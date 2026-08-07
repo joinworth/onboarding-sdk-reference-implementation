@@ -7,6 +7,7 @@ import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router';
 import { SDK3_API_URL } from '@/constants/urls';
 import { useWorthContext } from '@/components/worth/useWorthContext';
+import { handleOnboardingSignal } from './OnboardingSignalHandler';
 
 const normalizeError = (error: unknown): string => {
   if (error instanceof Error) {
@@ -74,6 +75,7 @@ const OnboardingSdk3 = () => {
           onError: (error) => {
             reportError(error);
           },
+          onSignal: handleOnboardingSignal,
         });
 
         onboardingRef.current = onboarding;
