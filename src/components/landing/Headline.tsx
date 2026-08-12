@@ -3,9 +3,9 @@ import { Link } from 'react-router';
 
 const Headline = (): ReactElement => {
   return (
-    <div className="flex justify-center px-6 py-29 text-white">
+    <div className="flex justify-center px-6 py-22 sm:py-29 text-white">
       <div className="text-center space-y-8">
-        <h1 className="text-[80px] font-serif text-white leading-22">
+        <h1 className="text-[40px] sm:text-[80px] font-serif text-white leading-tight sm:leading-22">
           Underwriting,
           <br />
           simplified with

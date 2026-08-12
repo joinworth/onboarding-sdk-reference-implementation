@@ -5,7 +5,7 @@ import './Header.css';
 
 const Header = (): ReactElement => {
   return (
-    <header className="text-white py-4 px-14 flex justify-center">
+    <header className="text-white py-4 px-4 sm:px-14 flex justify-center">
       <nav className="flex-1 max-w-7xl flex items-center justify-between self-center">
         <Link to="/">
           <img src={logo} alt="logo" className="w-10 h-10" />

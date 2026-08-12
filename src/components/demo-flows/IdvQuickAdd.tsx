@@ -11,6 +11,7 @@ import type { PrefillFormData } from '@/types/prefill';
 import { useSnackbar } from 'notistack';
 import { useState, type FormEvent, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
+import DemoShell from './DemoShell';
 
 interface IdvQuickAddProps {
     country: PrefillCountry;
@@ -67,61 +68,54 @@ const IdvQuickAdd = ({ country }: IdvQuickAddProps): ReactElement => {
     const regionLabel = country === 'UK' ? '(UK)' : '(US)';
 
     return (
-        <div className="min-h-fit py-12 px-6">
-            <div className="max-w-4xl mx-auto">
-                <div className="mb-8">
-                    <h1 className="text-4xl font-serif text-white mb-2">
-                        IDV Quick Add {regionLabel}
-                    </h1>
-                    <p className="text-white/70">
-                        Enter the required information to run an IDV quick add.
-                    </p>
+        <DemoShell
+            title={`IDV Quick Add ${regionLabel}`}
+            description="Enter the required information to run an IDV quick add."
+        >
+            <form onSubmit={handleSubmit} className="sdk-form space-y-6">
+                <FormSection title="Business Information">
+                    <BusinessInfo
+                        formData={formData}
+                        onChange={handleInputChange}
+                        country={country}
+                    />
+                </FormSection>
+
+                <FormSection title="Owner Information">
+                    <OwnerInfo
+                        formData={formData}
+                        onChange={handleInputChange}
+                        country={country}
+                    />
+                </FormSection>
+
+                <FormSection title="Applicant Information">
+                    <ApplicantInfo
+                        formData={formData}
+                        onChange={handleInputChange}
+                    />
+                </FormSection>
+
+                <div className="flex justify-end gap-4 pt-4">
+                    <button
+                        type="button"
+                        className="button-secondary-dark cursor-pointer"
+                        onClick={() =>
+                            setFormData(getInitialFormData(country))
+                        }
+                    >
+                        Reset
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="button-primary cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isSubmitting ? 'Submitting...' : 'Submit'}
+                    </button>
                 </div>
-                <form onSubmit={handleSubmit} className="sdk-form space-y-6">
-                    <FormSection title="Business Information">
-                        <BusinessInfo
-                            formData={formData}
-                            onChange={handleInputChange}
-                            country={country}
-                        />
-                    </FormSection>
-
-                    <FormSection title="Owner Information">
-                        <OwnerInfo
-                            formData={formData}
-                            onChange={handleInputChange}
-                            country={country}
-                        />
-                    </FormSection>
-
-                    <FormSection title="Applicant Information">
-                        <ApplicantInfo
-                            formData={formData}
-                            onChange={handleInputChange}
-                        />
-                    </FormSection>
-
-                    <div className="flex justify-end gap-4 pt-4">
-                        <button
-                            type="button"
-                            className="button-secondary-dark cursor-pointer"
-                            onClick={() =>
-                                setFormData(getInitialFormData(country))
-                            }
-                        >
-                            Reset
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="button-primary cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isSubmitting ? 'Submitting...' : 'Submit'}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+            </form>
+        </DemoShell>
     );
 };
 
