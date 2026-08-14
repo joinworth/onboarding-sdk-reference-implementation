@@ -3,7 +3,7 @@ import { RouterProvider } from 'react-router';
 import { WorthProvider } from '@/components/worth/WorthProvider';
 import router from './router';
 import './index.css';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider, closeSnackbar } from 'notistack';
 import { CodeProvider } from '@/components/utils/CodeProvider';
 
 const pages = import.meta.glob('../src/pages/**/*.(ts|tsx|sh)', {
@@ -32,7 +32,18 @@ export const loadCodeSnippets = async () => {
 
 createRoot(document.getElementById('root')!).render(
   <WorthProvider>
-    <SnackbarProvider>
+    <SnackbarProvider
+      action={(key) => (
+        <button
+          type="button"
+          onClick={() => closeSnackbar(key)}
+          aria-label="Dismiss notification"
+          className="px-2 text-xl leading-none text-white/80 transition-colors hover:text-white cursor-pointer"
+        >
+          &times;
+        </button>
+      )}
+    >
       <CodeProvider loadCodeSnippets={loadCodeSnippets}>
         <RouterProvider router={router} />
       </CodeProvider>
