@@ -101,13 +101,13 @@ const OnboardingSdk3 = () => {
   }, [enqueueSnackbar, inviteToken, navigate]);
 
   return (
-    <div className="flex flex-col items-center self-center w-full bg-white py-12">
+    <div className="flex flex-col items-center self-center w-full bg-white sm:py-12">
       {mountError && (
-        <div className="w-4xl mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+        <div className="w-full max-w-4xl px-4 mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
           {mountError}
         </div>
       )}
-      <div ref={mountRef} className="w-4xl min-h-[700px] bg-white" />
+      <div ref={mountRef} className="w-full max-w-4xl sm:px-4 min-h-125 sm:min-h-175 bg-white" />
     </div>
   );
 };

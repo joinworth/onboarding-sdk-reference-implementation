@@ -9,6 +9,7 @@ import type { PrefillFormData } from '@/types/prefill';
 import { useSnackbar } from 'notistack';
 import { useState, type FormEvent, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
+import DemoShell from './DemoShell';
 
 const FullOnboarding = (): ReactElement => {
     const { setOnboardingInviteToken, setFlow } = useWorthContext();
@@ -58,50 +59,42 @@ const FullOnboarding = (): ReactElement => {
     };
 
     return (
-        <div className="min-h-fit py-12 px-6">
-            <div className="max-w-4xl mx-auto">
-                <div className="mb-8">
-                    <h1 className="text-4xl font-serif text-white mb-2">
-                        Onboarding Form Demo
-                    </h1>
-                    <p className="text-white/70">
-                        Fill out the form below to start the onboarding process.
-                    </p>
+        <DemoShell
+            title="Onboarding Form Demo"
+            description="Fill out the form below to start the onboarding process."
+        >
+            <form onSubmit={handleSubmit} className="sdk-form space-y-6">
+                <FormSection title="Business Information">
+                    <BusinessInfo
+                        formData={formData}
+                        onChange={handleInputChange}
+                    />
+                </FormSection>
+                <FormSection title="Applicant Information">
+                    <ApplicantInfo
+                        formData={formData}
+                        onChange={handleInputChange}
+                    />
+                </FormSection>
+
+                <div className="flex justify-end gap-4 pt-4">
+                    <button
+                        type="button"
+                        className="button-secondary-dark cursor-pointer"
+                        onClick={() => setFormData(getInitialFormData())}
+                    >
+                        Reset
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="button-primary cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isSubmitting ? 'Submitting...' : 'Submit'}
+                    </button>
                 </div>
-
-                <form onSubmit={handleSubmit} className="sdk-form space-y-6">
-                    <FormSection title="Business Information">
-                        <BusinessInfo
-                            formData={formData}
-                            onChange={handleInputChange}
-                        />
-                    </FormSection>
-                    <FormSection title="Applicant Information">
-                        <ApplicantInfo
-                            formData={formData}
-                            onChange={handleInputChange}
-                        />
-                    </FormSection>
-
-                    <div className="flex justify-end gap-4 pt-4">
-                        <button
-                            type="button"
-                            className="button-secondary-dark cursor-pointer"
-                            onClick={() => setFormData(getInitialFormData())}
-                        >
-                            Reset
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="button-primary cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isSubmitting ? 'Submitting...' : 'Submit'}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+            </form>
+        </DemoShell>
     );
 };
 

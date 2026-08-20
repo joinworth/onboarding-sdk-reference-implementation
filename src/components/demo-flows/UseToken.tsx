@@ -3,6 +3,7 @@ import FormField from "../prefill/FormField";
 import FormSection from "../prefill/FormSection";
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
+import DemoShell from "./DemoShell";
 
 const UseToken: React.FC = () => {
     const [token, setToken] = useState('');
@@ -21,45 +22,37 @@ const UseToken: React.FC = () => {
         }
     };
 
-    return <div className="min-h-fit py-12 px-6">
-        <div className="max-w-4xl mx-auto">
-            <div className="mb-8">
-                <h1 className="text-4xl font-serif text-white mb-2">
-                    Invite Token ID
-                </h1>
-                <p className="text-white/70">
-                    Begin the standard onboarding process using an invite token.
-                </p>
+    return <DemoShell
+        title="Invite Token ID"
+        description="Begin the standard onboarding process using an invite token."
+    >
+        <form onSubmit={handleSubmit} className="sdk-form space-y-6">
+            <FormSection title="Invite Token ID">
+                <FormField
+                    label="Token ID"
+                    value={token}
+                    onChange={(event) => { setToken(event.target.value) }}
+                    required
+                />
+            </FormSection>
+            <div className="flex justify-end gap-4 pt-4">
+                <button
+                    type="button"
+                    className="button-secondary-dark cursor-pointer"
+                    onClick={() => setToken('')}
+                >
+                    Reset
+                </button>
+                <button
+                    type="submit"
+                    className="button-primary cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!token}
+                >
+                    Submit
+                </button>
             </div>
-
-            <form onSubmit={handleSubmit} className="sdk-form space-y-6">
-                <FormSection title="Invite Token ID">
-                    <FormField
-                        label="Token ID"
-                        value={token}
-                        onChange={(event) => { setToken(event.target.value) }}
-                        required
-                    />
-                </FormSection>
-                <div className="flex justify-end gap-4 pt-4">
-                    <button
-                        type="button"
-                        className="button-secondary-dark cursor-pointer"
-                        onClick={() => setToken('')}
-                    >
-                        Reset
-                    </button>
-                    <button
-                        type="submit"
-                        className="button-primary cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!token}
-                    >
-                        Submit
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+        </form>
+    </DemoShell>
 }
 
 export default UseToken

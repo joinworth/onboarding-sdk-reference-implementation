@@ -62,7 +62,7 @@ const Features = (): ReactElement => {
           <p className="text-sm uppercase tracking-wider text-white/70">
             Features
           </p>
-          <h2 className="text-5xl md:text-6xl font-serif text-white">
+          <h2 className="text-4xl md:text-6xl font-serif text-white">
             Precision in financial underwriting
           </h2>
           <p className="text-xl text-white/90 max-w-3xl mx-auto">
