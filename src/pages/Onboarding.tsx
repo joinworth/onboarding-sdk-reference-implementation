@@ -170,7 +170,7 @@ const Onboarding = () => {
   return (
     <div className="flex flex-col items-center self-center gap-4 w-full">
       <div className="flex flex-col items-center w-full bg-white py-12">
-        <div className="w-4xl mb-8">
+        <div className="w-full max-w-4xl px-4 mb-8">
           <h1 className="text-4xl font-serif text-black mb-2">
             Onboarding Form Demo
           </h1>
@@ -182,11 +182,11 @@ const Onboarding = () => {
         {isComplete ? <Success /> : null}
         <div
           ref={divRef}
-          className={`w-4xl ${isLoading || isComplete ? 'hidden' : ''} ${showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
+          className={`w-full max-w-4xl px-4 ${isLoading || isComplete ? 'hidden' : ''} ${showBorder ? 'border-4 border-blue-400 rounded-lg' : ''
             }`}
         />
       </div>
-      <div className="flex w-4xl justify-between pb-12">
+      <div className="flex flex-wrap gap-y-4 w-full max-w-4xl px-4 justify-between pb-12">
         <div className="flex gap-4">
           <button
             onClick={() => setShowBorder(!showBorder)}
@@ -239,7 +239,7 @@ const Onboarding = () => {
         )}
       </div>
       {showCodeSnippet && (
-        <div className="w-4xl mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
+        <div className="w-full max-w-4xl px-4 mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
           <p className="text-sm text-gray-400 mb-2">
             SDK React Initialization:
           </p>
@@ -251,7 +251,7 @@ const Onboarding = () => {
         </div>
       )}
       {showCssSnippet && (
-        <div className="w-4xl mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
+        <div className="w-full max-w-4xl px-4 mb-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
           <p className="text-sm text-gray-400 mb-2">Theme CSS:</p>
           <pre className="text-xs text-gray-300 overflow-x-auto">
             <code>{customCss}</code>
