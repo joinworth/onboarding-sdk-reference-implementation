@@ -2,7 +2,7 @@ import {
   createWorthOnboarding,
   type WorthOnboarding,
 } from '@worthai/onboarding-sdk';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router';
 import { SDK3_API_URL } from '@/constants/urls';
@@ -23,7 +23,6 @@ const OnboardingSdk3 = () => {
   const { onboardingInviteToken } = useWorthContext();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  const [mountError, setMountError] = useState('');
 
   const inviteToken = useMemo(
     () => onboardingInviteToken.trim(),
@@ -48,9 +47,7 @@ const OnboardingSdk3 = () => {
         return;
       }
 
-      const message = normalizeError(error);
-      setMountError(message);
-      enqueueSnackbar(message, {
+      enqueueSnackbar(normalizeError(error), {
         anchorOrigin: { vertical: 'top', horizontal: 'right' },
         variant: 'error',
       });
@@ -58,7 +55,6 @@ const OnboardingSdk3 = () => {
 
     const mountSdk = async () => {
       try {
-        setMountError('');
         onboarding = createWorthOnboarding({
           apiBaseUrl: SDK3_API_URL,
           inviteToken,
@@ -102,11 +98,6 @@ const OnboardingSdk3 = () => {
 
   return (
     <div className="flex flex-col items-center self-center w-full bg-white sm:py-12">
-      {mountError && (
-        <div className="w-full max-w-4xl px-4 mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
-          {mountError}
-        </div>
-      )}
       <div ref={mountRef} className="w-full max-w-4xl sm:px-4 min-h-125 sm:min-h-175 bg-white" />
     </div>
   );
