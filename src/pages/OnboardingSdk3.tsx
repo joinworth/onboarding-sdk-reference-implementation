@@ -1,5 +1,7 @@
 import {
   createWorthOnboarding,
+  isPostSignalFailedError,
+  WorthOnboardingInboundSignal,
   type WorthOnboarding,
 } from '@worthai/onboarding-sdk';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -7,7 +9,8 @@ import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router';
 import { SDK3_API_URL } from '@/constants/urls';
 import { useWorthContext } from '@/components/worth/useWorthContext';
-import { handleOnboardingSignal } from './OnboardingSignalHandler';
+import TermsModal from '@/components/onboarding/TermsModal';
+import { createOnboardingSignalHandler } from './OnboardingSignalHandler';
 
 const normalizeError = (error: unknown): string => {
   if (error instanceof Error) {
@@ -24,11 +27,29 @@ const OnboardingSdk3 = () => {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [mountError, setMountError] = useState('');
+  // Open while non-null. `fieldId` is the template field acceptance is written to.
+  const [termsModal, setTermsModal] = useState<{ fieldId?: string } | null>(
+    null,
+  );
+  // Acceptance per field, as last sent to the form, so reopening the modal shows it.
+  const [acceptedTerms, setAcceptedTerms] = useState<Record<string, boolean>>(
+    {},
+  );
 
   const inviteToken = useMemo(
     () => onboardingInviteToken.trim(),
     [onboardingInviteToken],
   );
+
+  const handleTermsAcceptedChange = (fieldId: string, accepted: boolean) => {
+    setAcceptedTerms((current) => ({ ...current, [fieldId]: accepted }));
+    // Writes the template's terms checkbox on the step the applicant is on.
+    // A rejected post reaches `onError` below; it never throws here.
+    onboardingRef.current?.postSignal(
+      WorthOnboardingInboundSignal.SET_FIELD_VALUES,
+      { values: { [fieldId]: accepted } },
+    );
+  };
 
   useEffect(() => {
     if (!inviteToken) {
@@ -73,9 +94,34 @@ const OnboardingSdk3 = () => {
             });
           },
           onError: (error) => {
+            if (isPostSignalFailedError(error)) {
+              // The flow is still mounted: a rejected post is a template or
+              // host bug to fix, not a mount failure.
+              const { reason, rejections = [] } = error.details;
+              console.warn(
+                'Onboarding rejected a posted signal',
+                error.details,
+              );
+              enqueueSnackbar(`Onboarding rejected the update: ${reason}`, {
+                anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                variant: 'warning',
+              });
+              // Nothing was written, so stop showing the refused fields as accepted.
+              setAcceptedTerms((current) => {
+                const next = { ...current };
+                for (const { fieldId } of rejections) {
+                  delete next[fieldId];
+                }
+                return next;
+              });
+              return;
+            }
+
             reportError(error);
           },
-          onSignal: handleOnboardingSignal,
+          onSignal: createOnboardingSignalHandler({
+            openTermsModal: (fieldId) => setTermsModal({ fieldId }),
+          }),
         });
 
         onboardingRef.current = onboarding;
@@ -100,6 +146,8 @@ const OnboardingSdk3 = () => {
     };
   }, [enqueueSnackbar, inviteToken, navigate]);
 
+  const termsFieldId = termsModal?.fieldId;
+
   return (
     <div className="flex flex-col items-center self-center w-full bg-white sm:py-12">
       {mountError && (
@@ -107,7 +155,23 @@ const OnboardingSdk3 = () => {
           {mountError}
         </div>
       )}
-      <div ref={mountRef} className="w-full max-w-4xl sm:px-4 min-h-125 sm:min-h-175 bg-white" />
+      <div
+        ref={mountRef}
+        className="w-full max-w-4xl sm:px-4 min-h-125 sm:min-h-175 bg-white"
+      />
+      {termsModal && (
+        <TermsModal
+          accepted={
+            termsFieldId !== undefined && (acceptedTerms[termsFieldId] ?? false)
+          }
+          onAcceptedChange={
+            termsFieldId === undefined
+              ? undefined
+              : (accepted) => handleTermsAcceptedChange(termsFieldId, accepted)
+          }
+          onClose={() => setTermsModal(null)}
+        />
+      )}
     </div>
   );
 };
