@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
+import type { Agreement } from './agreements';
 
 export interface TermsModalProps {
+  /** The document the signal's `linkType` selected. */
+  agreement: Agreement;
   /** Whether the applicant has accepted, as last sent to the form. */
   accepted: boolean;
   /**
@@ -18,6 +21,7 @@ export interface TermsModalProps {
  * `postSignal`.
  */
 const TermsModal = ({
+  agreement,
   accepted,
   onAcceptedChange,
   onClose,
@@ -36,17 +40,12 @@ const TermsModal = ({
       className="m-auto w-full max-w-lg rounded-xl bg-white p-6 text-black shadow-xl backdrop:bg-black/50"
     >
       <h2 id="terms-modal-title" className="text-2xl font-serif mb-4">
-        Terms and Conditions
+        {agreement.title}
       </h2>
       <div className="max-h-64 overflow-y-auto text-sm text-black/70 space-y-3 mb-6">
-        <p>
-          These sample terms stand in for your own. Replace them with the
-          agreement your applicants must accept before they submit.
-        </p>
-        <p>
-          By accepting, the applicant confirms the information in this
-          application is accurate and authorizes you to verify it.
-        </p>
+        {agreement.paragraphs.map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
       </div>
       {onAcceptedChange && (
         <label className="flex items-center gap-3 mb-6 cursor-pointer">

@@ -3,14 +3,19 @@ import {
   type WorthOnboardingSignalName,
 } from '@worthai/onboarding-sdk';
 import { enqueueSnackbar } from 'notistack';
+import {
+  isAgreementLinkType,
+  type AgreementLinkType,
+} from '@/components/onboarding/agreements';
 
 /** Host-owned UI a signal can open. Each opener is React state the page owns. */
 export interface OnboardingSignalHost {
   /**
-   * Opens the terms modal. `fieldId` is the template field the modal writes
-   * acceptance back to with `postSignal`; without one the terms are read-only.
+   * Opens the terms modal on the agreement `linkType` names. `fieldId` is the
+   * template field the modal writes acceptance back to with `postSignal`;
+   * without one the agreement is read-only.
    */
-  openTermsModal: (fieldId?: string) => void;
+  openTermsModal: (linkType: AgreementLinkType, fieldId?: string) => void;
 }
 
 /**
@@ -58,11 +63,12 @@ export const createOnboardingSignalHandler =
         break;
 
       case 'view-link':
-        // Authored. `linkType` selects which host-owned modal to open.
-        if (payload.linkType === 'terms') {
+        // Authored. `linkType` selects which host-owned agreement the modal shows.
+        if (isAgreementLinkType(payload.linkType)) {
           // `fieldId` names the template's terms checkbox, so the template, not this host, decides which field
           // acceptance lands in.
           host.openTermsModal(
+            payload.linkType,
             typeof payload.fieldId === 'string' ? payload.fieldId : undefined,
           );
           break;

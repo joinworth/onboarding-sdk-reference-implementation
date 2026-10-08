@@ -10,6 +10,10 @@ import { useNavigate } from 'react-router';
 import { SDK3_API_URL } from '@/constants/urls';
 import { useWorthContext } from '@/components/worth/useWorthContext';
 import TermsModal from '@/components/onboarding/TermsModal';
+import {
+  AGREEMENTS,
+  type AgreementLinkType,
+} from '@/components/onboarding/agreements';
 import { createOnboardingSignalHandler } from './OnboardingSignalHandler';
 
 const normalizeError = (error: unknown): string => {
@@ -27,10 +31,11 @@ const OnboardingSdk3 = () => {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [mountError, setMountError] = useState('');
-  // Open while non-null. `fieldId` is the template field acceptance is written to.
-  const [termsModal, setTermsModal] = useState<{ fieldId?: string } | null>(
-    null,
-  );
+  // Open while non-null. `linkType` picks the agreement; `fieldId` is the template field acceptance is written to.
+  const [termsModal, setTermsModal] = useState<{
+    linkType: AgreementLinkType;
+    fieldId?: string;
+  } | null>(null);
   // Acceptance per field, as last sent to the form, so reopening the modal shows it.
   const [acceptedTerms, setAcceptedTerms] = useState<Record<string, boolean>>(
     {},
@@ -120,7 +125,8 @@ const OnboardingSdk3 = () => {
             reportError(error);
           },
           onSignal: createOnboardingSignalHandler({
-            openTermsModal: (fieldId) => setTermsModal({ fieldId }),
+            openTermsModal: (linkType, fieldId) =>
+              setTermsModal({ linkType, fieldId }),
           }),
         });
 
@@ -161,6 +167,7 @@ const OnboardingSdk3 = () => {
       />
       {termsModal && (
         <TermsModal
+          agreement={AGREEMENTS[termsModal.linkType]}
           accepted={
             termsFieldId !== undefined && (acceptedTerms[termsFieldId] ?? false)
           }
