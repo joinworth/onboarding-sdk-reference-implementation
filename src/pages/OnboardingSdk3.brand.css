@@ -7,4 +7,16 @@ html [data-worth-onboarding-sdk] {
   --color-primary: #1a1f71; /* buttons, focus rings, selected states */
   --color-primary-content: #ffffff; /* text on primary buttons */
   --flow-progress-bar: #1a1f71; /* step progress bar */
+  --color-error: #b00020; /* error text and invalid field borders */
+}
+
+/*
+ * Focused field border and outline. The SDK sets --input-color on each
+ * field, so it has to be set on the field, not the container. Fields in
+ * an error state are skipped so they stay red while focused.
+ */
+html [data-worth-onboarding-sdk] .input:is(:focus, :focus-within):not(.input-error),
+html [data-worth-onboarding-sdk] .select:is(:focus, :focus-within):not(.select-error, .input-error),
+html [data-worth-onboarding-sdk] .textarea:is(:focus, :focus-within):not(.textarea-error, .input-error) {
+  --input-color: #0057b8;
 }
