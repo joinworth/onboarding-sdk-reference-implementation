@@ -1,22 +1,44 @@
 /*
- * Brands the Worth SDK from the host page.
+ * Brands the Worth SDK from the host page, mapped from a shadcn/ui theme.
  * The `html` prefix outranks the SDK's own theme rule,
  * which the SDK adds to <head> after this stylesheet.
+ *
+ * Not mapped: muted-foreground (ours is foreground at 70%), and
+ * secondary/accent (daisyUI uses those names for strong brand colors).
  */
 html [data-worth-onboarding-sdk] {
-  --color-primary: #1a1f71; /* buttons, focus rings, selected states */
-  --color-primary-content: #ffffff; /* text on primary buttons */
-  --flow-progress-bar: #1a1f71; /* step progress bar */
-  --color-error: #b00020; /* error text and invalid field borders */
+  --color-primary: oklch(0.3858 0.1858 264.05); /* primary */
+  --color-primary-content: oklch(0.985 0 0); /* primary-foreground */
+  --color-base-content: oklch(0.145 0 0); /* foreground */
+  --color-base-100: oklch(1 0 0); /* card, popover */
+  --color-base-200: oklch(0.961 0.002 247.86); /* muted */
+  --color-base-300: oklch(0.898 0.002 247.86); /* border */
+  --input-border-color: oklch(0.898 0.002 247.86); /* input */
+  --color-error: oklch(0.577 0.245 27.325); /* destructive */
+  --color-error-content: oklch(0.985 0 0); /* destructive-foreground */
+  background-color: oklch(1 0 0); /* background; a fixed color in the SDK */
 }
 
-/*
- * Focused field border and outline. The SDK sets --input-color on each
- * field, so it has to be set on the field, not the container. Fields in
- * an error state are skipped so they stay red while focused.
- */
-html [data-worth-onboarding-sdk] .input:is(:focus, :focus-within):not(.input-error),
-html [data-worth-onboarding-sdk] .select:is(:focus, :focus-within):not(.select-error, .input-error),
-html [data-worth-onboarding-sdk] .textarea:is(:focus, :focus-within):not(.textarea-error, .input-error) {
-  --input-color: #0057b8;
+/* input: resting field border. Skips focus and error states. */
+html
+  [data-worth-onboarding-sdk]
+  :is(.input, .select, .textarea):not(
+    :focus,
+    :focus-within,
+    .input-error,
+    .select-error,
+    .textarea-error
+  ) {
+  --input-color: oklch(0.898 0.002 247.86);
+}
+
+/* ring: focused field border and outline. Skips error state. */
+html
+  [data-worth-onboarding-sdk]
+  :is(.input, .select, .textarea):is(:focus, :focus-within):not(
+    .input-error,
+    .select-error,
+    .textarea-error
+  ) {
+  --input-color: oklch(0.3858 0.1858 264.05);
 }
