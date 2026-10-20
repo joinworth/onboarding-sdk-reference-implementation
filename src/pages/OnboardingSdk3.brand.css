@@ -1,0 +1,10 @@
+/*
+ * Brands the Worth SDK from the host page.
+ * The `html` prefix outranks the SDK's own theme rule,
+ * which the SDK adds to <head> after this stylesheet.
+ */
+html [data-worth-onboarding-sdk] {
+  --color-primary: #1a1f71; /* buttons, focus rings, selected states */
+  --color-primary-content: #ffffff; /* text on primary buttons */
+  --flow-progress-bar: #1a1f71; /* step progress bar */
+}
