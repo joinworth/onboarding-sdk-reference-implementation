@@ -4,3 +4,6 @@ dist
 src/.npmrc
 pnpm-lock.yaml
 pnpm-workspace.yaml
+.git
+.env*
+*.local
