@@ -1,15 +1,10 @@
 # syntax=docker/dockerfile:1
 
-# Local get-started only (DOG-1363): Vite dev server, configured entirely from env so it starts
-# without the interactive `npm run start:integration` prompts. Compose sets VITE_API_URL (the
-# onboarding-sdk-auth lambda), VITE_ORIGIN (applicant webapp) and VITE_SDK3_API_URL.
 FROM node:24-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
-# @joinworth/onboarding-sdk comes from GitHub Packages. The token is a BuildKit secret, so it is
-# mounted for this RUN only and never lands in a layer or the image config.
 RUN --mount=type=secret,id=npm_token,env=NPM_TOKEN,required=true \
     env "npm_config_//npm.pkg.github.com/:_authToken=${NPM_TOKEN}" \
       npm_config_@joinworth:registry=https://npm.pkg.github.com \
