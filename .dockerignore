@@ -1,0 +1,9 @@
+node_modules
+dist
+.npmrc
+src/.npmrc
+pnpm-lock.yaml
+pnpm-workspace.yaml
+.git
+.env*
+*.local

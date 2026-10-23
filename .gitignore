@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+!Dockerfile.local
 
 # Editor directories and files
 .vscode/*
@@ -24,3 +25,8 @@ dist-ssr
 *.sw?
 
 .env.dev
+
+# Local registry config and package-manager leftovers; never commit
+.npmrc
+pnpm-lock.yaml
+pnpm-workspace.yaml
