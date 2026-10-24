@@ -1,0 +1,44 @@
+/*
+ * Brands the Worth SDK from the host page, mapped from a shadcn/ui theme.
+ * The `html` prefix outranks the SDK's own theme rule,
+ * which the SDK adds to <head> after this stylesheet.
+ *
+ * Not mapped: muted-foreground (ours is foreground at 70%), and
+ * secondary/accent (daisyUI uses those names for strong brand colors).
+ */
+html [data-worth-onboarding-sdk] {
+  --color-primary: oklch(0.3858 0.1858 264.05); /* primary */
+  --color-primary-content: oklch(0.985 0 0); /* primary-foreground */
+  --color-base-content: oklch(0.145 0 0); /* foreground */
+  --color-base-100: oklch(1 0 0); /* card, popover */
+  --color-base-200: oklch(0.961 0.002 247.86); /* muted */
+  --color-base-300: oklch(0.898 0.002 247.86); /* border */
+  --input-border-color: oklch(0.898 0.002 247.86); /* input */
+  --color-error: oklch(0.577 0.245 27.325); /* destructive */
+  --color-error-content: oklch(0.985 0 0); /* destructive-foreground */
+  background-color: oklch(1 0 0); /* background; a fixed color in the SDK */
+}
+
+/* input: resting field border. Skips focus and error states. */
+html
+  [data-worth-onboarding-sdk]
+  :is(.input, .select, .textarea):not(
+    :focus,
+    :focus-within,
+    .input-error,
+    .select-error,
+    .textarea-error
+  ) {
+  --input-color: oklch(0.898 0.002 247.86);
+}
+
+/* ring: focused field border and outline. Skips error state. */
+html
+  [data-worth-onboarding-sdk]
+  :is(.input, .select, .textarea):is(:focus, :focus-within):not(
+    .input-error,
+    .select-error,
+    .textarea-error
+  ) {
+  --input-color: oklch(0.3858 0.1858 264.05);
+}
