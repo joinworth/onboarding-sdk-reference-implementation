@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import { SDK3_API_URL } from '@/constants/urls';
 import { useWorthContext } from '@/components/worth/useWorthContext';
 import { handleOnboardingSignal } from './OnboardingSignalHandler';
+import './OnboardingSdk3.brand.css';
 
 const normalizeError = (error: unknown): string => {
   if (error instanceof Error) {
