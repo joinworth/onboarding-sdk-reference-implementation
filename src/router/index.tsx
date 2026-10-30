@@ -40,8 +40,10 @@ const routes: RouteObject[] = [
         element: <DemoFlows />,
         children: [
           { index: true, element: <DemoFlowsOptions /> },
-          { path: 'idv-quick-add-us', element: <IdvQuickAdd country="US" /> },
-          { path: 'idv-quick-add-uk', element: <IdvQuickAdd country="UK" /> },
+          { path: 'idv-quick-add-us', element: <IdvQuickAdd country="US" sdk={2} /> },
+          { path: 'idv-quick-add-uk', element: <IdvQuickAdd country="UK" sdk={2} /> },
+          { path: 'idv-quick-add-us-sdk-3', element: <IdvQuickAdd country="US" sdk={3} /> },
+          { path: 'idv-quick-add-uk-sdk-3', element: <IdvQuickAdd country="UK" sdk={3} /> },
           { path: 'use-token', element: <UseToken /> },
           { path: 'use-token-sdk-3', element: <UseTokenSdk3 /> },
           { path: 'full-onboarding', element: <FullOnboarding /> },
