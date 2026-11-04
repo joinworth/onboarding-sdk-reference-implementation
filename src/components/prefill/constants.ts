@@ -15,6 +15,7 @@ export const getInitialFormData = (
       address_city: 'London',
       address_state: 'LDN',
       address_postal_code: 'WC2E 9DH',
+      address_country: 'GB',
       tin: 'GB123456789',
       owner1_first_name: 'Patrick',
       owner1_last_name: 'McWilliams',

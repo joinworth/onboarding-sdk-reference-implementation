@@ -2,6 +2,8 @@ export type PrefillFlow =
   | 'full-flow'
   | 'selfie-only'
   | 'selfie-only-uk'
+  | 'selfie-only-sdk3'
+  | 'selfie-only-uk-sdk3'
   | 'use-token';
 
 export interface PrefillFormData {
@@ -11,6 +13,8 @@ export interface PrefillFormData {
   address_city: string;
   address_state: string;
   address_postal_code: string;
+  /** ISO country of the business address; case-service reads postcodes as US when it is absent. */
+  address_country?: string;
   tin: string;
   owner1_first_name: string;
   owner1_last_name: string;

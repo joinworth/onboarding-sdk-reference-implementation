@@ -26,6 +26,10 @@ dist-ssr
 
 .env.dev
 
+# Local mkcert pair (get-started setup-ssl-certs.sh); never commit
+ssl/*.key
+ssl/*.cert
+
 # Local registry config and package-manager leftovers; never commit
 .npmrc
 pnpm-lock.yaml

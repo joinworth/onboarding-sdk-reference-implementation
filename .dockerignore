@@ -7,3 +7,4 @@ pnpm-workspace.yaml
 .git
 .env*
 *.local
+ssl
