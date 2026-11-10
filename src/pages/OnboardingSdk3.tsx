@@ -5,9 +5,17 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router';
+import Success from '@/components/onboarding/Success';
 import { SDK3_API_URL } from '@/constants/urls';
 import { useWorthContext } from '@/components/worth/useWorthContext';
 import { handleOnboardingSignal } from './OnboardingSignalHandler';
+
+/**
+ * Authored by the IDV Quick Add template when the identity verification session ends (payload
+ * `{ result: 'pass' | 'fail' }`). Like SDK 2's IDENTITY_VERIFICATION_PASS/FAIL_SESSION detached events,
+ * either result ends the flow here.
+ */
+const IDV_COMPLETED_SIGNAL = 'identity-verification-completed';
 
 const normalizeError = (error: unknown): string => {
   if (error instanceof Error) {
@@ -24,6 +32,7 @@ const OnboardingSdk3 = () => {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [mountError, setMountError] = useState('');
+  const [isComplete, setIsComplete] = useState(false);
 
   const inviteToken = useMemo(
     () => onboardingInviteToken.trim(),
@@ -75,7 +84,21 @@ const OnboardingSdk3 = () => {
           onError: (error) => {
             reportError(error);
           },
-          onSignal: handleOnboardingSignal,
+          onSignal: (name, payload) => {
+            if (name !== IDV_COMPLETED_SIGNAL) {
+              handleOnboardingSignal(name, payload);
+              return;
+            }
+            console.log('SDK 3 identity verification ended', payload);
+            setIsComplete(true);
+            // Unmount after the SDK's action run returns, not from inside its own callback.
+            setTimeout(() => {
+              onboarding?.unmount();
+              if (onboardingRef.current === onboarding) {
+                onboardingRef.current = null;
+              }
+            });
+          },
         });
 
         onboardingRef.current = onboarding;
@@ -107,7 +130,11 @@ const OnboardingSdk3 = () => {
           {mountError}
         </div>
       )}
-      <div ref={mountRef} className="w-full max-w-4xl sm:px-4 min-h-125 sm:min-h-175 bg-white" />
+      {isComplete ? <Success /> : null}
+      <div
+        ref={mountRef}
+        className={`w-full max-w-4xl sm:px-4 min-h-125 sm:min-h-175 bg-white ${isComplete ? 'hidden' : ''}`}
+      />
     </div>
   );
 };
