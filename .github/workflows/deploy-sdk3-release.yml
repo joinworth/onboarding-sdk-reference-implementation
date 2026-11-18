@@ -1,0 +1,114 @@
+name: Deploy SDK 3 release to staging or production
+
+run-name: "Deploy ref app to ${{ github.event.action == 'sdk3-staging-deployed' && 'staging' || github.event.action == 'sdk3-npm-published' && 'production' || inputs.environment }} with SDK 3 ${{ github.event.client_payload.version || inputs.version }}"
+
+# Fired by onboarding-application after it deploys a tag to staging or production. Mirrors the
+# manual release: branch off main, point the SDK 3 alias at the matching build, and dispatch
+# deploy.yml for that branch. main is never touched, so update-sdk3.yml's automated dev bumps keep flowing.
+#
+#   sdk3-staging-deployed (reference-app-staging.yml): staging,    npm:@joinworth/onboarding-sdk@<version>  (GitHub Packages, no approval)
+#   sdk3-npm-published    (release-sdk3-npm.yml):      production, npm:@worthai/onboarding-sdk@<version>    (public npm, approved upstream)
+#
+# workflow_dispatch is the manual fallback, e.g. to redeploy a version that already exists.
+
+on:
+  repository_dispatch:
+    types: [sdk3-staging-deployed, sdk3-npm-published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      version:
+        description: "SDK 3 version: GitHub Packages for staging (e.g. 3.0.0-beta.3.22.1), public npm for production (e.g. 3.23.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+  packages: read
+
+concurrency:
+  group: deploy-sdk3-${{ github.event.action == 'sdk3-staging-deployed' && 'staging' || github.event.action == 'sdk3-npm-published' && 'production' || inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  release-branch-and-deploy:
+    name: Deploy SDK 3 ${{ github.event.client_payload.version || inputs.version }}
+    runs-on: ubuntu-latest
+    env:
+      ENVIRONMENT: ${{ github.event.action == 'sdk3-staging-deployed' && 'staging' || github.event.action == 'sdk3-npm-published' && 'production' || inputs.environment }}
+      VERSION: ${{ github.event.client_payload.version || inputs.version }}
+    steps:
+      - name: Resolve package for environment
+        run: |
+          case "$ENVIRONMENT" in
+            staging)    PACKAGE="@joinworth/onboarding-sdk" ;;
+            production) PACKAGE="@worthai/onboarding-sdk" ;;
+            *) echo "::error::Unsupported environment: '${ENVIRONMENT}'"; exit 1 ;;
+          esac
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Invalid SDK version: '${VERSION}'"
+            exit 1
+          fi
+          echo "PACKAGE=$PACKAGE" >> "$GITHUB_ENV"
+          echo "BRANCH=release/sdk3-${ENVIRONMENT}-${VERSION}" >> "$GITHUB_ENV"
+
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+          registry-url: https://npm.pkg.github.com
+          scope: "@joinworth"
+
+      - name: Check the version exists
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$(npm view "${PACKAGE}@${VERSION}" version 2>/dev/null)" ]; then
+            echo "::error::${PACKAGE}@${VERSION} does not exist"
+            exit 1
+          fi
+
+      - name: Point SDK 3 at the release build
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Same import name; only the alias target changes.
+          npm pkg set "dependencies.@worthai/onboarding-sdk=npm:${PACKAGE}@${VERSION}"
+          npm install --package-lock-only --ignore-scripts
+          git diff --stat
+
+      - name: Push release branch
+        run: |
+          git config user.name "release-bot"
+          git config user.email "github-actions@joinworth.com"
+          git checkout -b "$BRANCH"
+          git add package.json package-lock.json
+          git commit -m "chore: deploy SDK 3 ${PACKAGE}@${VERSION} to ${ENVIRONMENT}" || echo "No dependency change; deploying main as-is"
+          # Branch pushes made with GITHUB_TOKEN do not trigger deploy.yml, which only deploys main anyway.
+          git push --force origin "$BRANCH"
+
+      - name: Dispatch deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # workflow_dispatch is one of the events GITHUB_TOKEN is allowed to trigger.
+          gh workflow run deploy.yml --ref main -f "branch=${BRANCH}" -f "environment=${ENVIRONMENT}"
+          {
+            echo "### SDK 3 ${ENVIRONMENT} release"
+            echo ""
+            echo "- Branch: \`${BRANCH}\`"
+            echo "- SDK: \`${PACKAGE}@${VERSION}\`"
+            echo "- Dispatched \`deploy.yml\` with \`environment=${ENVIRONMENT}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
