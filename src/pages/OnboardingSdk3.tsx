@@ -9,6 +9,7 @@ import Success from '@/components/onboarding/Success';
 import { SDK3_API_URL } from '@/constants/urls';
 import { useWorthContext } from '@/components/worth/useWorthContext';
 import { handleOnboardingSignal } from './OnboardingSignalHandler';
+import './OnboardingSdk3.brand.css';
 
 /**
  * Authored by the IDV Quick Add template when the identity verification session ends (payload
