@@ -41,6 +41,8 @@ jobs:
   release-branch-and-deploy:
     name: Deploy SDK 3 ${{ github.event.client_payload.version || inputs.version }}
     runs-on: ubuntu-latest
+    # Backstop for the ~10 minute wait for a newly published npm version below.
+    timeout-minutes: 20
     env:
       ENVIRONMENT: ${{ github.event.action == 'sdk3-staging-deployed' && 'staging' || github.event.action == 'sdk3-npm-published' && 'production' || inputs.environment }}
       VERSION: ${{ github.event.client_payload.version || inputs.version }}
@@ -71,23 +73,35 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: "@joinworth"
 
-      - name: Check the version exists
+      # A version published moments ago is not immediately visible: npm serves package metadata
+      # through a CDN, and the production dispatch arrives right after publish-npm finishes. Wait
+      # until the version can actually be installed, not just looked up, since the two read
+      # different metadata that can update at different times. Staging's GitHub Packages builds
+      # already exist and pass on the first attempt.
+      - name: Wait for the version and point SDK 3 at it
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ -z "$(npm view "${PACKAGE}@${VERSION}" version 2>/dev/null)" ]; then
-            echo "::error::${PACKAGE}@${VERSION} does not exist"
-            exit 1
-          fi
-
-      - name: Point SDK 3 at the release build
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAX_ATTEMPTS: 20
+          INTERVAL_SECONDS: 30
         run: |
           # Same import name; only the alias target changes.
           npm pkg set "dependencies.@worthai/onboarding-sdk=npm:${PACKAGE}@${VERSION}"
-          npm install --package-lock-only --ignore-scripts
-          git diff --stat
+
+          for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
+            if [ -n "$(npm view "${PACKAGE}@${VERSION}" version --prefer-online 2>/dev/null)" ] \
+              && npm install --package-lock-only --ignore-scripts --prefer-online; then
+              echo "${PACKAGE}@${VERSION} is installable (attempt ${attempt}/${MAX_ATTEMPTS})"
+              git diff --stat
+              exit 0
+            fi
+            if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
+              echo "${PACKAGE}@${VERSION} is not installable yet (attempt ${attempt}/${MAX_ATTEMPTS}); retrying in ${INTERVAL_SECONDS}s"
+              sleep "$INTERVAL_SECONDS"
+            fi
+          done
+
+          echo "::error::${PACKAGE}@${VERSION} is still not installable after $((MAX_ATTEMPTS * INTERVAL_SECONDS / 60)) minutes. Check it exists, then rerun this workflow."
+          exit 1
 
       - name: Push release branch
         run: |
